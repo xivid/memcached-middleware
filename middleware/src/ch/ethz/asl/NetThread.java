@@ -22,7 +22,7 @@ public class NetThread extends Thread {
     // Config
     private String myIp;
     private int myPort;
-    private static final int MAX_REQUEST_SIZE = 4096;
+    private static final int MAX_REQUEST_SIZE = 5000;  // max key size: 250B, max value size: 4096B, max #keys in a request: 10
 
     // System-wide shared data
     private final RequestQueue requestQueue;

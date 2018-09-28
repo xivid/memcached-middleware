@@ -32,7 +32,7 @@ abstract class RequestProcessor {
 
     int numMisses;  // number of missed keys, shared among methods when processing a get/multi-get
 
-    private static final int MAX_RESPONSE_SIZE = 20480;
+    private static final int MAX_RESPONSE_SIZE = 50000;  // max value size: 4096B, max #values in a response: 10
 
     RequestProcessor(Statistics stats, Socket[] servers, Logger threadLogger) {
         statistics = stats;
