@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="OFF" shutdownHook="disable">
+    <appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %level - %msg%n"/>
+        </Console>
+        <Console name="Statistics" target="SYSTEM_OUT">
+            <PatternLayout pattern="%m%n"/>
+        </Console>
+    </appenders>
+    <loggers>
+        <Logger name="main" level="info" additivity="false">
+            <appender-ref ref="Console"/>
+        </Logger>
+        <Logger name="net" level="info" additivity="false">
+            <appender-ref ref="Console"/>
+        </Logger>
+        <Logger name="worker" level="info" additivity="false">
+            <appender-ref ref="Console"/>
+        </Logger>
+        <Logger name="exit" level="info" additivity="false">
+            <appender-ref ref="Console"/>
+        </Logger>
+        <Logger name="stat" level="info" additivity="false">
+            <appender-ref ref="Statistics"/>
+        </Logger>
+    </loggers>
+</configuration>

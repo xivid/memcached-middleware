@@ -1,0 +1,13 @@
+# MacOS system files
+.DS_Store
+
+# Course Handout Files
+handout/
+
+# Ant and IntelliJ IDEA generated files
+middleware/.idea/
+middleware/build/
+middleware/dist/
+middleware/middleware.iml
+middleware/out/
+.idea/
