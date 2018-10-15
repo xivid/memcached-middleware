@@ -1,4 +1,4 @@
-package ch.ethz.asl;
+package ch.ethz.asltest;
 
 class PeriodLog {
     private long logSecond;

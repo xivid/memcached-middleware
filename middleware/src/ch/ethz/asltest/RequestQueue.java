@@ -1,4 +1,4 @@
-package ch.ethz.asl;
+package ch.ethz.asltest;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
