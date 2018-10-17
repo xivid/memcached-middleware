@@ -57,6 +57,7 @@ class PeriodLog {
         // calculate average queue length
         double avgQueueLength = 0;
 
+        long[] numGetsServer = null;
         for (ThreadLog log: threadLogs) {
             long numSetsAdded = log.getNumSets();
             long numGetsAdded = log.getNumGets();
@@ -83,6 +84,13 @@ class PeriodLog {
             sumMultigetResponse += log.getSumMultigetResponse();
             
             avgQueueLength += log.getAvgQueueLength();
+
+            if (numGetsServer == null) {
+                numGetsServer = new long[log.numGetsServer.length];
+            }
+            for (int i = 0; i < log.numGetsServer.length; ++i) {
+                numGetsServer[i] += log.numGetsServer[i];
+            }
         }
 
         avgQueueLength /= threadLogs.length;
@@ -91,7 +99,7 @@ class PeriodLog {
                 numSets, tpSet, sumSetWaiting, sumSetService, sumSetResponse,
                 numGets, tpGet, sumGetWaiting, sumGetService, sumGetResponse,
                 numMultigets, tpMultiget, sumMultigetWaiting, sumMultigetService, sumMultigetResponse,
-                avgQueueLength);
+                avgQueueLength, numGetsServer);
 
         return mergedLog;
     }
@@ -100,7 +108,17 @@ class PeriodLog {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("[%d secs] arrival rate %.2f ops/sec\n\n", logSecond, arrivalRate));
-        sb.append("ALL WORKERS STATS ").append(getMergedLog().toString()).append("\n");
+        ThreadLog mergedLog = getMergedLog();
+        sb.append("ALL WORKERS STATS ").append(mergedLog.toString());
+        sb.append("Gets distribution on servers: \n");
+        for (int i = 0; i < mergedLog.numGetsServer.length; ++i) {
+            sb.append("Server ");
+            sb.append(i);
+            sb.append(": ");
+            sb.append(mergedLog.numGetsServer[i]);
+            sb.append("\n");
+        }
+        sb.append("\n");
         for (int i = 0; i < threadLogs.length; ++i) {
             sb.append("WORKER ").append(i).append(" STATS ").append(threadLogs[i].toString()).append("\n");
         }

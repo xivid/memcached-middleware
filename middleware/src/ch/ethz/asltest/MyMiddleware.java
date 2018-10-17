@@ -78,7 +78,7 @@ public class MyMiddleware {
         }
 
         for (int i = 0; i < numThreadsPTP; ++i) {
-            workerStatistics[i] = new Statistics();
+            workerStatistics[i] = new Statistics(mcAddresses.size());
             workerThreads[i] = new WorkerThread(workerStatistics[i], queue, mcAddresses, readSharded, exceptionLogs);
             workerThreads[i].setName("Worker " + i);
             workerThreads[i].start();

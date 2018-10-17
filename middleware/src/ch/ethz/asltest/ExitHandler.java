@@ -147,6 +147,7 @@ public class ExitHandler extends Thread {
         double multigetMissRatio;
         double totalMissRatio;
 
+        long[] numGetsServer = null;
         for (PeriodLog log : periodLogs) {
             ThreadLog mergedLog = log.getMergedLog();
 
@@ -162,6 +163,8 @@ public class ExitHandler extends Thread {
             maxTpGet = Math.max(mergedLog.getTpGet(), maxTpGet);
             maxTpMultiget = Math.max(mergedLog.getTpMultiget(), maxTpMultiget);
             maxTp = Math.max(mergedLog.getTpSet() + mergedLog.getTpGet() + mergedLog.getTpMultiget(), maxTp);
+
+            numGetsServer = mergedLog.numGetsServer;  // we only want the numGetsServer[] of last period's merged log
         }
 
         numOps = numSets + numGets + numMultigets;
@@ -189,7 +192,7 @@ public class ExitHandler extends Thread {
         multigetMissRatio = numMultigetKeys > 0 ? ((double)numMultigetMisses) / numMultigetKeys * 100 : 0;
         totalMissRatio = (numTotalHits + numTotalMisses > 0) ? ((double)numTotalMisses) / (numTotalHits + numTotalMisses) * 100 : 0;
 
-        return String.format(
+        StringBuilder sb = new StringBuilder(String.format(
             "=====================================================================================================================\n" +
             "%-10s%11s%25s%20s%15s%11s%11s%13s\n" +
             "---------------------------------------------------------------------------------------------------------------------\n" +
@@ -203,6 +206,17 @@ public class ExitHandler extends Thread {
             "Gets",       numGets,      avgGetResponse,      maxTpGet,            avgSizeGet,      numGetHits,      numGetMisses,      getMissRatio,
             "Multi-gets", numMultigets, avgMultigetResponse, maxTpMultiget,       avgSizeMultiget, numMultigetHits, numMultigetMisses, multigetMissRatio,
             "Totals",     numOps,       avgResponse,         maxTp,               avgSizeTotal,    numTotalHits,    numTotalMisses,    totalMissRatio
-        );
+        ));
+
+        sb.append("Gets distribution on servers: \n");
+        for (int i = 0; i < numGetsServer.length; ++i) {
+            sb.append("Server ");
+            sb.append(i);
+            sb.append(": ");
+            sb.append(numGetsServer[i]);
+            sb.append("\n");
+        }
+
+        return sb.toString();
     }
 }

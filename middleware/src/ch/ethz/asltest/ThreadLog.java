@@ -24,10 +24,12 @@ class ThreadLog {
 
     private double avgQueueLength;
 
+    long[] numGetsServer;
+
     ThreadLog(long numSets, double tpSet, long sumSetWaiting, long sumSetService, long sumSetResponse,
               long numGets, double tpGet, long sumGetWaiting, long sumGetService, long sumGetResponse,
               long numMultigets, double tpMultiget, long sumMultigetWaiting, long sumMultigetService, long sumMultigetResponse,
-              double avgQueueLength) {
+              double avgQueueLength, long[] numGetsServer) {
         this.numSets = numSets;
         this.tpSet = tpSet;
         this.sumSetWaiting = sumSetWaiting;
@@ -47,6 +49,8 @@ class ThreadLog {
         this.sumMultigetResponse = sumMultigetResponse;
 
         this.avgQueueLength = avgQueueLength;
+
+        this.numGetsServer = numGetsServer;
     }
 
 

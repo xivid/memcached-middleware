@@ -135,6 +135,7 @@ abstract class RequestProcessor {
 
     void processGetImpl(Request request) throws IOException {
         int serverIndex = getAndIncrementNextServerIndex();
+        statistics.markGetServer(serverIndex);
 
         // send req to server
         sendToServer(serverIndex, request.getMsg());

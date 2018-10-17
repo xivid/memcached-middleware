@@ -1,6 +1,8 @@
 package ch.ethz.asltest;
 
 
+import java.util.Arrays;
+
 /**
  * Per-thread statistics data.
  * Every worker thread holds a instance and update the numbers in it.
@@ -8,12 +10,20 @@ package ch.ethz.asltest;
  */
 class Statistics {
 
-    Statistics() {
+    Statistics(int numServers) {
+        numGetsServer = new long[numServers];
+
         setHistogram = new Histogram();
         getHistogram = new Histogram();
         multigetHistogram = new Histogram();
 
         timeLastDequeue = System.nanoTime() / 1000;  // in us
+    }
+
+    private long numGetsServer[];
+
+    void markGetServer(int serverId) {
+        ++numGetsServer[serverId];
     }
 
     // histograms for all three types respectively
@@ -201,6 +211,6 @@ class Statistics {
                 numSetsAdded,      tpSet,      sumSetWaiting,      sumSetService,      sumSetResponse,
                 numGetsAdded,      tpGet,      sumGetWaiting,      sumGetService,      sumGetResponse,
                 numMultigetsAdded, tpMultiget, sumMultigetWaiting, sumMultigetService, sumMultigetResponse,
-                avgQueueLength);
+                avgQueueLength,    Arrays.copyOf(numGetsServer, numGetsServer.length));
     }
 }
