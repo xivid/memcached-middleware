@@ -64,9 +64,8 @@ echolog ${cmd}
 eval ${cmd}
 pidping=$!
 sleep 30
-cmd="pkill -2 ping"
-echolog ${cmd}
-eval ${cmd}
+echolog "killing ping"
+kill -2 ${pidping}
 
 # readonly workloads
 echolog "# Readonly workloads"
