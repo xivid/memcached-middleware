@@ -1,25 +1,23 @@
-2018-10-17 20:22:55 Running on mw1. This is a middleware machine.
-2018-10-17 20:22:55
-2018-10-17 20:22:55 # ASL section 1 experiments
-2018-10-17 20:22:55 Run each experiment with 30 seconds and 1 repetitions
-2018-10-17 20:22:55 Populating server: server1
-2018-10-17 20:23:25
-2018-10-17 20:23:25
-2018-10-17 20:23:25 ping server1 > ../logs/1/ping_mw1_to_server1.log &
-2018-10-17 20:23:55 killing ping
-2018-10-17 20:23:55 Old data folder found, renaming to ../logs/backup1_2018-10-17_20-23-55
-2018-10-17 20:23:55
-2018-10-17 20:23:55 =================================================================
-2018-10-17 20:23:55 Test with CT = 2, VC = 32, MW workers = 32, repetition 1 begin
-2018-10-17 20:23:55 -----------------------------------------------------------------
-2018-10-17 20:23:55 dstat -tcnm --output ../logs/1/dstat_mw1.csv > ../logs/1/dstat_mw1.log &
-2018-10-17 20:23:55 java -Dlog4j.configurationFile=../middleware/lib/log4j2.xml -cp ../middleware/dist/middleware-zhiyang.jar:../middleware/lib/* ch.ethz.asltest.RunMW -l 0.0.0.0 -p 11211 -s false -m server1:11211 -t 32 > ../logs/1/mw_00.log &
-2018-10-17 20:23:55 Sleeping 50 secs for the test to finish...
-2018-10-17 20:24:45 Kill java, ping, dstat (if exist)
-2018-10-17 20:24:45 Sleeping 10 extra secs for logs to be fully dumped...
-2018-10-17 20:24:55 Kill java again if exists
-2018-10-17 20:24:55 Test with CT = 2, VC = 32, MW workers = 32, repetition 1 end
-2018-10-17 20:24:55 =================================================================
-2018-10-17 20:24:55
-2018-10-17 20:24:55
-2018-10-17 20:24:55 # ASL section 1 experiments ALL DONE.
+2018-10-17 20:38:35 Running on mw1. This is a middleware machine.
+2018-10-17 20:38:35
+2018-10-17 20:38:35 # ASL section 1 experiments
+2018-10-17 20:38:35 Run each experiment with 3600 seconds and 1 repetitions
+2018-10-17 20:38:35 Populating server: server1
+2018-10-17 20:39:05
+2018-10-17 20:39:05
+2018-10-17 20:39:05 ping server1 > ../logs/1/ping_mw1_to_server1.log &
+2018-10-17 20:39:35 killing ping
+2018-10-17 20:39:35 =================================================================
+2018-10-17 20:39:35 Test with CT = 2, VC = 32, MW workers = 32, repetition 1 begin
+2018-10-17 20:39:35 -----------------------------------------------------------------
+2018-10-17 20:39:35 dstat -tcnm --output ../logs/1/dstat_mw1.csv > ../logs/1/dstat_mw1.log &
+2018-10-17 20:39:35 java -Dlog4j.configurationFile=../middleware/lib/log4j2.xml -cp ../middleware/dist/middleware-zhiyang.jar:../middleware/lib/* ch.ethz.asltest.RunMW -l 0.0.0.0 -p 11211 -s false -m server1:11211 -t 32 > ../logs/1/mw_00.log &
+2018-10-17 20:39:35 Sleeping 3620 secs for the test to finish...
+2018-10-17 21:39:55 Kill java, ping, dstat (if exist)
+2018-10-17 21:39:55 Sleeping 10 extra secs for logs to be fully dumped...
+2018-10-17 21:40:05 Kill java again if exists
+2018-10-17 21:40:05 Test with CT = 2, VC = 32, MW workers = 32, repetition 1 end
+2018-10-17 21:40:05 =================================================================
+2018-10-17 21:40:05
+2018-10-17 21:40:05
+2018-10-17 21:40:05 # ASL section 1 experiments ALL DONE.
