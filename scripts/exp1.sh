@@ -115,9 +115,6 @@ else
     kill -2 ${pidping}
 
     cmdpart="java -Dlog4j.configurationFile=../middleware/lib/log4j2.xml -cp ../middleware/dist/middleware-zhiyang.jar:../middleware/lib/* ch.ethz.asltest.RunMW -l 0.0.0.0 -p 11211 -s false -m server1:11211"
-
-    [ -e ${fnamepart} ] && backup="../logs/backup1_$(date +%Y-%m-%d_%H-%M-%S)" && echolog "Old data folder found, renaming to ${backup}" && mv ${fnamepart} ${backup}
-    echolog
     for r in `seq 1 ${repetitions}`; do
         echolog "================================================================="
         echolog "Test with CT = 2, VC = 32, MW workers = 32, repetition $r begin"
