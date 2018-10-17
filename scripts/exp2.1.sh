@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# usage: ./exp2.1.sh [test time] [repetitions] [nopop]
 
 if [ -z "${VM_NAME}" ]; then
     echo "Variable VM_NAME not set!"
@@ -57,22 +58,27 @@ fi
 [ -e ${fnamepart} ] && backup="../logs/backup2.1_$(date +%Y-%m-%d_%H-%M-%S)" && echolog "Old data folder found, renaming to ${backup}" && mv ${fnamepart} ${backup}
 echolog
 
+# run ping once before experiments
+cmd="ping server1 > ${dir}/ping_${VM_NAME}_to_server1.log & "
+echolog ${cmd}
+eval ${cmd}
+pidping=$!
+sleep 30
+cmd="pkill -2 ping"
+echolog ${cmd}
+eval ${cmd}
+
 # readonly workloads
 echolog "# Readonly workloads"
 for c in "${clients[@]}"; do
     for r in `seq 1 ${repetitions}`; do
         echolog "================================================================="
         echolog "Test with CT = 2, VC = $c, repetition $r begin"
-	    echolog "-----------------------------------------------------------------"
+        echolog "-----------------------------------------------------------------"
         dir="${fnamepart}/readonly/vc${c}/r${r}"
         mkdir -p ${dir}
-        # run ping
-        cmd="ping server1 > ${dir}/ping_${VM_NAME}_to_server1.log & "
-        echolog ${cmd}
-        eval ${cmd}
-        pidping=$!
         # run dstat
-        cmd="dstat -cnm --output ${dir}/dstat_${VM_NAME}.csv > ${dir}/dstat_${VM_NAME}.log & "
+        cmd="dstat -tcnm --output ${dir}/dstat_${VM_NAME}.csv > ${dir}/dstat_${VM_NAME}.log & "
         echolog ${cmd}
         eval ${cmd}
         piddstat=$!
@@ -83,16 +89,15 @@ for c in "${clients[@]}"; do
         pidmemtier=$!
         echolog "Waiting for $((time+10)) secs for test to fully stop..."
         sleep $((time+10))
-        echolog "Kill memtier, ping and dstat (if exist)"
+        echolog "Kill memtier and dstat (if exist)"
         kill ${pidmemtier}  # if memtier didn't stop, force kill it
-        kill -2 ${pidping}
         kill ${piddstat}
-	    echolog "-----------------------------------------------------------------"
+        echolog "-----------------------------------------------------------------"
         echolog "Test with CT = 2, VC = $c, repetition $r end"
         echolog "================================================================="
         echolog
         echolog
-	done
+    done
 done
 
 
@@ -102,16 +107,11 @@ for c in "${clients[@]}"; do
     for r in `seq 1 ${repetitions}`; do
         echolog "================================================================="
         echolog "Test with CT = 2, VC = $c, repetition $r begin"
-	    echolog "-----------------------------------------------------------------"
+        echolog "-----------------------------------------------------------------"
         dir="${fnamepart}/writeonly/vc${c}/r${r}"
         mkdir -p ${dir}
-        # run ping
-        cmd="ping server1 > ${dir}/ping_${VM_NAME}_to_server1.log & "
-        echolog ${cmd}
-        eval ${cmd}
-        pidping=$!
         # run dstat
-        cmd="dstat -cnm --output ${dir}/dstat_${VM_NAME}.csv > ${dir}/dstat_${VM_NAME}.log & "
+        cmd="dstat -tcnm --output ${dir}/dstat_${VM_NAME}.csv > ${dir}/dstat_${VM_NAME}.log & "
         echolog ${cmd}
         eval ${cmd}
         piddstat=$!
@@ -122,14 +122,13 @@ for c in "${clients[@]}"; do
         pidmemtier=$!
         echolog "Waiting for $((time+10)) secs for test to fully stop..."
         sleep $((time+10))
-        echolog "Kill memtier, ping and dstat (if exist)"
+        echolog "Kill memtier and dstat (if exist)"
         kill ${pidmemtier}  # if memtier didn't stop, force kill it
-        kill -2 ${pidping}
         kill ${piddstat}
-	    echolog "-----------------------------------------------------------------"
+        echolog "-----------------------------------------------------------------"
         echolog "Test with CT = 2, VC = $c, repetition $r end"
         echolog "================================================================="
         echolog
         echolog
-	done
+    done
 done
