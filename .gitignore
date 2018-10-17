@@ -5,6 +5,7 @@
 handout/
 
 # Ant and IntelliJ IDEA generated files
+out/
 middleware/.idea/
 middleware/build/
 middleware/dist/
