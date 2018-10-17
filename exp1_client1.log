@@ -1,0 +1,9 @@
+2018-10-17 20:00:16 Running on client1. This is a memtier machine.
+2018-10-17 20:00:16
+2018-10-17 20:00:16 # ASL section 1 experiments
+2018-10-17 20:00:16 Run each experiment with 3600 seconds and 1 repetitions
+2018-10-17 20:00:16 Populating server: server1
+2018-10-17 20:00:16
+2018-10-17 20:00:16 Old data folder found, renaming to ../logs/backup1_2018-10-17_20-00-16
+2018-10-17 20:00:16
+2018-10-17 20:00:16 ping server1 > ../logs/1/ping_client1_to_server1.log &
