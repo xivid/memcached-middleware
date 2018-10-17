@@ -16,7 +16,7 @@ done
 echo "Filling servers ${servers[@]}."
 for server in "${servers[@]}"; do
     #add parameters to the command
-    cmd="memtier_benchmark --port=11211 --protocol=memcache_text --ratio=1:0 --key-pattern=S:S --expiry-range=9999-10000 --key-maximum=10000 --data-size=4096 --hide-histogram --server=${server} --test-time=${time}"
+    cmd="memtier_benchmark --port=11211 --protocol=memcache_text --clients=1 --threads=1 --ratio=1:0 --key-pattern=S:S --expiry-range=9999-10000 --key-maximum=10000 --data-size=4096 --hide-histogram --server=${server} --test-time=${time}"
     #run the command
     echo $cmd
     $cmd > /dev/null 2>&1 &

@@ -42,7 +42,7 @@ else
     repetitions=$2
 fi
 
-cmdpart="memtier_benchmark --port=11211 --protocol=memcache_text --expiry-range=9999-10000 --key-maximum=10000"
+cmdpart="memtier_benchmark --port=11211 --protocol=memcache_text --expiry-range=9999-10000 --key-maximum=10000 --data-size=4096"
 fnamepart="../logs/2.2"
 clients=(1 2 4 8 16 32) #(1 2 4 8 12 16 20 24 28 32)
 
@@ -125,8 +125,8 @@ for c in "${clients[@]}"; do
         eval ${cmd}
         piddstat=$!
         # run memtier
-        cmd1="${cmdpart} --ratio=1:0 --data-size=4096 --test-time=${time} --clients=${c} --threads=1 --server=server1 > ${dir}/client_${VM_NAME}0.log 2>&1 & "
-        cmd2="${cmdpart} --ratio=1:0 --data-size=4096 --test-time=${time} --clients=${c} --threads=1 --server=server2 > ${dir}/client_${VM_NAME}1.log 2>&1 & "
+        cmd1="${cmdpart} --ratio=1:0 --test-time=${time} --clients=${c} --threads=1 --server=server1 > ${dir}/client_${VM_NAME}0.log 2>&1 & "
+        cmd2="${cmdpart} --ratio=1:0 --test-time=${time} --clients=${c} --threads=1 --server=server2 > ${dir}/client_${VM_NAME}1.log 2>&1 & "
         echolog ${cmd1}
         eval ${cmd1}
         pid1=$!
