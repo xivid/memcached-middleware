@@ -46,6 +46,7 @@ fi
 
 cmdpart="memtier_benchmark --port=11211 --protocol=memcache_text --expiry-range=9999-10000 --key-maximum=10000 --data-size=4096"
 fnamepart="../logs/1"
+mkdir -p ${fnamepart}
 clients=(1 2 4 8 16 32) # (1 2 4 8 12 16 20 24 32)
 
 # pre-populate the memcached servers
