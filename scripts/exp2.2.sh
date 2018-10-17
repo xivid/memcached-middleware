@@ -59,11 +59,11 @@ fi
 echolog
 
 # run ping once before experiments
-cmd1="ping server1 > ${dir}/ping_${VM_NAME}_to_server1.log & "
+cmd1="ping server1 > ${fnamepart}/ping_${VM_NAME}_to_server1.log & "
 echolog ${cmd1}
 eval ${cmd1}
 pidping1=$!
-cmd2="ping server2 > ${dir}/ping_${VM_NAME}_to_server2.log & "
+cmd2="ping server2 > ${fnamepart}/ping_${VM_NAME}_to_server2.log & "
 echolog ${cmd2}
 eval ${cmd2}
 pidping2=$!
