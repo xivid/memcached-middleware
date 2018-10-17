@@ -61,16 +61,16 @@ fi
 echolog
 mkdir -p ${fnamepart}
 
-# run ping once before experiments
-cmd="ping server1 > ${fnamepart}/ping_${VM_NAME}_to_server1.log & "
-echolog ${cmd}
-eval ${cmd}
-pidping=$!
-sleep 30
-echolog "killing ping"
-kill -2 ${pidping}
-
 if [[ ${type} == "memtier" ]]; then
+    # run ping once before experiments
+    cmd="ping middleware1 > ${fnamepart}/ping_${VM_NAME}_to_middleware1.log & "
+    echolog ${cmd}
+    eval ${cmd}
+    pidping=$!
+    sleep 30
+    echolog "killing ping"
+    kill -2 ${pidping}
+
     for r in `seq 1 ${repetitions}`; do
         echolog "================================================================="
         echolog "Test with CT = 2, VC = 32, repetition $r begin"
@@ -86,7 +86,7 @@ if [[ ${type} == "memtier" ]]; then
         eval ${cmd}
         piddstat=$!
         # run memtier
-        cmd="${cmdpart} --ratio=1:1 --server=server1 --test-time=${time} --clients=32 --threads=2 > ${dir}/memtier_${VM_NAME}0.log 2>&1 &"
+        cmd="${cmdpart} --ratio=1:1 --server=middleware1 --test-time=${time} --clients=32 --threads=2 > ${dir}/memtier_${VM_NAME}0.log 2>&1 &"
         echolog ${cmd}
         eval ${cmd}
         pidmemtier=$!
@@ -105,6 +105,15 @@ if [[ ${type} == "memtier" ]]; then
     done
 else
     # middleware side
+    # run ping once before experiments
+    cmd="ping server1 > ${fnamepart}/ping_${VM_NAME}_to_server1.log & "
+    echolog ${cmd}
+    eval ${cmd}
+    pidping=$!
+    sleep 30
+    echolog "killing ping"
+    kill -2 ${pidping}
+
     cmdpart="java -Dlog4j.configurationFile=../middleware/lib/log4j2.xml -cp ../middleware/dist/middleware-zhiyang.jar:../middleware/lib/* ch.ethz.asltest.RunMW -l 0.0.0.0 -p 11211 -s false -m server1:11211"
 
     [ -e ${fnamepart} ] && backup="../logs/backup1_$(date +%Y-%m-%d_%H-%M-%S)" && echolog "Old data folder found, renaming to ${backup}" && mv ${fnamepart} ${backup}
