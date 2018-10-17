@@ -1,25 +1,25 @@
-2018-10-17 20:22:55 Running on client1. This is a memtier machine.
-2018-10-17 20:22:55
-2018-10-17 20:22:55 # ASL section 1 experiments
-2018-10-17 20:22:55 Run each experiment with 30 seconds and 1 repetitions
-2018-10-17 20:22:55 Populating server: server1
-2018-10-17 20:23:25
-2018-10-17 20:23:25
-2018-10-17 20:23:25 ping middleware1 > ../logs/1/ping_client1_to_middleware1.log &
-2018-10-17 20:23:55 killing ping
-2018-10-17 20:23:55 =================================================================
-2018-10-17 20:23:55 Test with CT = 2, VC = 32, repetition 1 begin
-2018-10-17 20:23:55 -----------------------------------------------------------------
-2018-10-17 20:23:55 Waiting for 10 secs for middleware to start...
-2018-10-17 20:24:05 Run test (of 30 secs) now
-2018-10-17 20:24:05 dstat -tcnm --output ../logs/1/dstat_client1.csv > ../logs/1/dstat_client1.log &
-2018-10-17 20:24:05 memtier_benchmark --port=11211 --protocol=memcache_text --expiry-range=9999-10000 --key-maximum=10000 --data-size=4096 --ratio=1:1 --server=middleware1 --test-time=30 --clients=32 --threads=2 > ../logs/1/memtier_client10.log 2>&1 &
-2018-10-17 20:24:05 Waiting for 40 secs for test to fully stop...
-2018-10-17 20:24:45 Kill memtier and dstat (if exist)
-2018-10-17 20:24:45 Waiting for extra 10 secs for middleware to fully stop...
-2018-10-17 20:24:55 -----------------------------------------------------------------
-2018-10-17 20:24:55 Test with CT = 2, VC = 32, repetition 1 end
-2018-10-17 20:24:55 =================================================================
-2018-10-17 20:24:55
-2018-10-17 20:24:55
-2018-10-17 20:24:55 # ASL section 1 experiments ALL DONE.
+2018-10-17 20:38:35 Running on client1. This is a memtier machine.
+2018-10-17 20:38:35
+2018-10-17 20:38:35 # ASL section 1 experiments
+2018-10-17 20:38:35 Run each experiment with 3600 seconds and 1 repetitions
+2018-10-17 20:38:35 Populating server: server1
+2018-10-17 20:39:05
+2018-10-17 20:39:05
+2018-10-17 20:39:05 ping middleware1 > ../logs/1/ping_client1_to_middleware1.log &
+2018-10-17 20:39:35 killing ping
+2018-10-17 20:39:35 =================================================================
+2018-10-17 20:39:35 Test with CT = 2, VC = 32, repetition 1 begin
+2018-10-17 20:39:35 -----------------------------------------------------------------
+2018-10-17 20:39:35 Waiting for 10 secs for middleware to start...
+2018-10-17 20:39:45 Run test (of 3600 secs) now
+2018-10-17 20:39:45 dstat -tcnm --output ../logs/1/dstat_client1.csv > ../logs/1/dstat_client1.log &
+2018-10-17 20:39:45 memtier_benchmark --port=11211 --protocol=memcache_text --expiry-range=9999-10000 --key-maximum=10000 --data-size=4096 --ratio=1:1 --server=middleware1 --test-time=3600 --clients=32 --threads=2 > ../logs/1/memtier_client10.log 2>&1 &
+2018-10-17 20:39:45 Waiting for 3610 secs for test to fully stop...
+2018-10-17 21:39:55 Kill memtier and dstat (if exist)
+2018-10-17 21:39:55 Waiting for extra 10 secs for middleware to fully stop...
+2018-10-17 21:40:05 -----------------------------------------------------------------
+2018-10-17 21:40:05 Test with CT = 2, VC = 32, repetition 1 end
+2018-10-17 21:40:05 =================================================================
+2018-10-17 21:40:05
+2018-10-17 21:40:05
+2018-10-17 21:40:05 # ASL section 1 experiments ALL DONE.
