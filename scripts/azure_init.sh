@@ -1,3 +1,7 @@
+#!/usr/bin/env bash
+
+# script to setup everything on azure virtual machines
+
 sudo apt-get update
 sudo apt-get install memcached git unzip ant openjdk-8-jdk
 wget https://github.com/RedisLabs/memtier_benchmark/archive/master.zip
