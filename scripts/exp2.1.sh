@@ -51,7 +51,7 @@ echolog "# ASL section 2.1 experiments"
 echolog "Run each experiment with ${time} seconds and ${repetitions} repetitions"
 if [[ $3 != "nopop" ]]; then
     echolog "Populating server: server1"
-    ./prepopulate.sh 1000 server1
+    ./prepopulate.sh 30 server1
     echolog
 fi
 
