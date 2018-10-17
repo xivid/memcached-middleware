@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# run the middleware for one hour, observe if there are any abnormal phenomenons
+# run the middleware for one hour, observe the distribution of requests to all servers
 
 # usage: ./exp1.sh [test time] [repetitions] [nopop]
 
@@ -86,7 +86,7 @@ if [[ ${type} == "memtier" ]]; then
         eval ${cmd}
         piddstat=$!
         # run memtier
-        cmd="${cmdpart} --ratio=1:1 --server=middleware1 --test-time=${time} --clients=32 --threads=2 > ${dir}/memtier_${VM_NAME}0.log 2>&1 &"
+        cmd="${cmdpart} --ratio=0:1 --server=middleware1 --test-time=${time} --clients=32 --threads=2 > ${dir}/memtier_${VM_NAME}0.log 2>&1 &"
         echolog ${cmd}
         eval ${cmd}
         pidmemtier=$!
@@ -106,18 +106,28 @@ if [[ ${type} == "memtier" ]]; then
 else
     # middleware side
     # run ping once before experiments
-    cmd="ping server1 > ${fnamepart}/ping_${VM_NAME}_to_server1.log & "
-    echolog ${cmd}
-    eval ${cmd}
-    pidping=$!
+    cmd1="ping server1 > ${fnamepart}/ping_${VM_NAME}_to_server1.log & "
+    echolog ${cmd1}
+    eval ${cmd1}
+    pidping1=$!
+    cmd2="ping server2 > ${fnamepart}/ping_${VM_NAME}_to_server2.log & "
+    echolog ${cmd2}
+    eval ${cmd2}
+    pidping2=$!
+    cmd3="ping server3 > ${fnamepart}/ping_${VM_NAME}_to_server3.log & "
+    echolog ${cmd3}
+    eval ${cmd3}
+    pidping3=$!
     sleep 30
-    echolog "killing ping"
-    kill -2 ${pidping}
+    echolog "kill all pings"
+    kill -2 ${pidping1}
+    kill -2 ${pidping2}
+    kill -2 ${pidping3}
 
-    cmdpart="java -Dlog4j.configurationFile=../middleware/lib/log4j2.xml -cp ../middleware/dist/middleware-zhiyang.jar:../middleware/lib/* ch.ethz.asltest.RunMW -l 0.0.0.0 -p 11211 -s false -m server1:11211"
+    cmdpart="java -Dlog4j.configurationFile=../middleware/lib/log4j2.xml -cp ../middleware/dist/middleware-zhiyang.jar:../middleware/lib/* ch.ethz.asltest.RunMW -l 0.0.0.0 -p 11211 -t 64 -s false -m server1:11211 server2:11211 server3:11211"
     for r in `seq 1 ${repetitions}`; do
         echolog "================================================================="
-        echolog "Test with CT = 2, VC = 32, MW workers = 32, repetition $r begin"
+        echolog "Test with CT = 2, VC = 32, MW workers = 64, repetition $r begin"
         echolog "-----------------------------------------------------------------"
         dir="${fnamepart}"
         mkdir -p ${dir}
@@ -127,7 +137,7 @@ else
         eval ${cmd}
         piddstat=$!
         # run middleware
-        cmd="${cmdpart} -t 32 > ${dir}/mw_00.log & "
+        cmd="${cmdpart} > ${dir}/mw_00.log & "
         echolog ${cmd}
         eval ${cmd}
         pid=$!
@@ -141,7 +151,8 @@ else
         sleep 10
         echolog "Kill java again if exists"
         kill -9 ${pid}  # in case middleware mysteriously cannot stop
-        echolog "Test with CT = 2, VC = 32, MW workers = 32, repetition $r end"
+        echolog "-----------------------------------------------------------------"
+        echolog "Test with CT = 2, VC = 32, MW workers = 64, repetition $r end"
         echolog "================================================================="
         echolog; echolog
     done
