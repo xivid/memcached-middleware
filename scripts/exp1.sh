@@ -95,8 +95,8 @@ if [[ ${type} == "memtier" ]]; then
         echolog "Kill memtier and dstat (if exist)"
         kill ${pidmemtier}  # if memtier didn't stop, force kill it
         kill ${piddstat}
-        echolog "Waiting for extra 10 secs for middleware to fully stop..."
-        sleep 10  # give middleware to stop (dump statistics)
+        echolog "Waiting for extra 100 secs for middleware to fully stop..."
+        sleep 100  # give middleware to stop (dump statistics)
         echolog "-----------------------------------------------------------------"
         echolog "Test with CT = 2, VC = 32, repetition $r end"
         echolog "================================================================="
@@ -147,8 +147,8 @@ else
         echolog "Kill java, ping, dstat (if exist)"
         kill ${pid}
         kill ${piddstat}
-        echolog "Sleeping 10 extra secs for logs to be fully dumped..."
-        sleep 10
+        echolog "Sleeping 100 extra secs for logs to be fully dumped..."
+        sleep 100
         echolog "Kill java again if exists"
         kill -9 ${pid}  # in case middleware mysteriously cannot stop
         echolog "-----------------------------------------------------------------"
