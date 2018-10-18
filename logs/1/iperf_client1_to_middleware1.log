@@ -1,0 +1,21 @@
+------------------------------------------------------------
+Client connecting to middleware1, TCP port 5001
+TCP window size: 45.0 KByte (default)
+------------------------------------------------------------
+[  3] local 10.0.0.9 port 59082 connected with 10.0.0.10 port 5001
+[ ID] Interval       Transfer     Bandwidth
+[  3]  0.0-10.0 sec   242 MBytes   202 Mbits/sec
+------------------------------------------------------------
+Client connecting to middleware1, TCP port 5001
+TCP window size: 45.0 KByte (default)
+------------------------------------------------------------
+[  3] local 10.0.0.9 port 59116 connected with 10.0.0.10 port 5001
+[ ID] Interval       Transfer     Bandwidth
+[  3]  0.0-10.0 sec   238 MBytes   200 Mbits/sec
+------------------------------------------------------------
+Client connecting to middleware1, TCP port 5001
+TCP window size: 45.0 KByte (default)
+------------------------------------------------------------
+[  3] local 10.0.0.9 port 59142 connected with 10.0.0.10 port 5001
+[ ID] Interval       Transfer     Bandwidth
+[  3]  0.0-10.0 sec   239 MBytes   200 Mbits/sec
