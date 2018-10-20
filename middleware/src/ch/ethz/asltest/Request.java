@@ -20,10 +20,13 @@ public class Request {
     private String msg;
     private RequestType type;
     private int numKeys;
-    private String[] tokens;  // only for multi-get ops
+    private String[] tokens;  // only used for multi-get ops
     private SocketChannel channel;
 
     // ------ Measuring instruments ------
+    /** relative microsecond (us) the request *completely* arrives at the middleware (i.e. the last socket message becomes readable) */
+    private long timeArrived;
+
     /** relative microsecond (us) the request has been enqueued */
     private long timeEnqueued;
 
@@ -39,12 +42,13 @@ public class Request {
     /** relative microsecond (us) the middleware has assembled and sent the response to client */
     private long timeSentToClient;
 
-    Request(String m, RequestType t, int k, String[] s, SocketChannel c) {
+    Request(String m, RequestType t, int k, String[] s, SocketChannel c, long arrivalTime) {
         msg = m;
         type = t;
         numKeys = k;
         tokens = s;
         channel = c;
+        timeArrived = arrivalTime;
     }
 
     String getMsg()
@@ -80,13 +84,18 @@ public class Request {
             sb.append("error");
         }
 
-        sb.append(", timeEnqueued: ").append(timeEnqueued).append(", timeDequeued: ").append(timeDequeued)
+        sb.append(", timeArrived: ").append(timeArrived)
+                .append(", timeEnqueued: ").append(timeEnqueued).append(", timeDequeued: ").append(timeDequeued)
                 .append(", timeSentToServers: ").append(timeSentToServers)
                 .append(", timeServersResponded: ").append(timeServersResponded)
                 .append(", timeSentToClient: ").append(timeSentToClient)
                 .append(")");
 
         return sb.toString();
+    }
+
+    void setTimeArrived(long arrivalTime) {
+        timeArrived = arrivalTime;
     }
 
     void setTimeEnqueued() {
@@ -111,7 +120,7 @@ public class Request {
 
 
     /**
-     *
+     * waiting time in the middleware's queue
      * @return waiting time in the middleware's queue
      */
     long getWaitingTime() {
@@ -120,7 +129,7 @@ public class Request {
 
 
     /**
-     *
+     * service time of memcached server for this request, in microseconds.
      * @return service time of memcached server for this request, in microseconds.
      */
     long getServiceTime() {
@@ -128,8 +137,20 @@ public class Request {
     }
 
 
+    /**
+     * Response time observed at middleware, i.e. time left middleware - time arrived at middleware
+     * @return Response time observed at middleware
+     */
     long getResponseTime() {
-        return timeSentToClient - timeEnqueued;
+        return timeSentToClient - timeArrived;
+    }
+
+    /**
+     * Internal processing time, e.g. request parsing, response assembling, ...
+     * @return time spent in the internal processing of the middleware, excluding waiting time and service time
+     */
+    long getProcessingTime() {
+        return getResponseTime() - getWaitingTime() - getServiceTime();
     }
 
 }

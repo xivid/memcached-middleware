@@ -134,6 +134,7 @@ public class WorkerThread extends Thread {
                 statistics.addSetWaitingTime(request.getWaitingTime());
                 statistics.addSetServiceTime(request.getServiceTime());
                 statistics.addSetResponseTime(request.getResponseTime());
+                statistics.addSetProcessTime(request.getProcessingTime());
                 statistics.setHistogram.add(request.getResponseTime());
                 break;
             }
@@ -143,6 +144,7 @@ public class WorkerThread extends Thread {
                 statistics.addGetWaitingTime(request.getWaitingTime());
                 statistics.addGetServiceTime(request.getServiceTime());
                 statistics.addGetResponseTime(request.getResponseTime());
+                statistics.addGetProcessTime(request.getProcessingTime());
                 statistics.getHistogram.add(request.getResponseTime());
                 break;
             }
@@ -153,6 +155,7 @@ public class WorkerThread extends Thread {
                 statistics.addMultigetWaitingTime(request.getWaitingTime());
                 statistics.addMultigetServiceTime(request.getServiceTime());
                 statistics.addMultigetResponseTime(request.getResponseTime());
+                statistics.addMultigetProcessTime(request.getProcessingTime());
                 statistics.multigetHistogram.add(request.getResponseTime());
                 break;
             }

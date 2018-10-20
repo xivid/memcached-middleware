@@ -199,10 +199,10 @@ public class ExitHandler extends Thread {
             "%-10s%11d%25.2f%20.2f%15.2f%11d%11d%12.2f%%\n" +
             "=====================================================================================================================\n",
             "Type",       "Ops",        "Avg Response Time (us)", "Max. TP (ops/sec)", "Avg Get Size",  "Hits",          "Misses",          "Miss Ratio",
-            "Sets",       numSets,      avgSetResponse,      maxTpSet,            "---",           "---",           "---",             "---",
-            "Gets",       numGets,      avgGetResponse,      maxTpGet,            avgSizeGet,      numGetHits,      numGetMisses,      getMissRatio,
-            "Multi-gets", numMultigets, avgMultigetResponse, maxTpMultiget,       avgSizeMultiget, numMultigetHits, numMultigetMisses, multigetMissRatio,
-            "Totals",     numOps,       avgResponse,         maxTp,               avgSizeTotal,    numTotalHits,    numTotalMisses,    totalMissRatio
+            "Sets",       numSets,      avgSetResponse,           maxTpSet,            "---",           "---",           "---",             "---",
+            "Gets",       numGets,      avgGetResponse,           maxTpGet,            avgSizeGet,      numGetHits,      numGetMisses,      getMissRatio,
+            "Multi-gets", numMultigets, avgMultigetResponse,      maxTpMultiget,       avgSizeMultiget, numMultigetHits, numMultigetMisses, multigetMissRatio,
+            "Totals",     numOps,       avgResponse,              maxTp,               avgSizeTotal,    numTotalHits,    numTotalMisses,    totalMissRatio
         );
     }
 }

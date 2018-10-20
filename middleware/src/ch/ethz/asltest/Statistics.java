@@ -68,15 +68,15 @@ class Statistics {
     private long sumGetServiceTimePrev = 0;
     private long sumMultigetServiceTime = 0;
     private long sumMultigetServiceTimePrev = 0;
-    
+
     void addSetServiceTime(long t) {
         sumSetServiceTime += t;
     }
-    
+
     void addGetServiceTime(long t) {
         sumGetServiceTime += t;
     }
-    
+
     void addMultigetServiceTime(long t) {
         sumMultigetServiceTime += t;
     }
@@ -101,6 +101,26 @@ class Statistics {
         sumMultigetResponseTime += t;
     }
     
+    // sum of all requests' Process time (us) of middleware by type
+    private long sumSetProcessTime = 0;
+    private long sumSetProcessTimePrev = 0;
+    private long sumGetProcessTime = 0;
+    private long sumGetProcessTimePrev = 0;
+    private long sumMultigetProcessTime = 0;
+    private long sumMultigetProcessTimePrev = 0;
+
+    void addSetProcessTime(long t) {
+        sumSetProcessTime += t;
+    }
+
+    void addGetProcessTime(long t) {
+        sumGetProcessTime += t;
+    }
+
+    void addMultigetProcessTime(long t) {
+        sumMultigetProcessTime += t;
+    }
+
     // total number of keys and cache misses for get/multi-get ops (counted by key, not by op)
     private long numKeysMultiget = 0;
     private long numMissesGet = 0;
@@ -153,10 +173,14 @@ class Statistics {
         sumSetServiceTimePrev = sumSetServiceTime;
         sumGetServiceTimePrev = sumGetServiceTime;
         sumMultigetServiceTimePrev = sumMultigetServiceTime;
-        
+
         sumSetResponseTimePrev = sumSetResponseTime;
         sumGetResponseTimePrev = sumGetResponseTime;
         sumMultigetResponseTimePrev = sumMultigetResponseTime;
+
+        sumSetProcessTimePrev = sumSetProcessTime;
+        sumGetProcessTimePrev = sumGetProcessTime;
+        sumMultigetProcessTimePrev = sumMultigetProcessTime;
 
         sumLengthTimePrev = sumLengthTime;
     }
@@ -192,15 +216,20 @@ class Statistics {
         long sumGetResponse = sumGetResponseTime - sumGetResponseTimePrev;
         long sumMultigetResponse = sumMultigetResponseTime - sumMultigetResponseTimePrev;
         
+        // calculate Process time added
+        long sumSetProcess = sumSetProcessTime - sumSetProcessTimePrev;
+        long sumGetProcess = sumGetProcessTime - sumGetProcessTimePrev;
+        long sumMultigetProcess = sumMultigetProcessTime - sumMultigetProcessTimePrev;
+
         // calculate average queue length
         double avgQueueLength = (duration > 0) ? (double)(sumLengthTime - sumLengthTimePrev) / 1000000 / duration : 0.0;
 
         mark();
 
         return new ThreadLog(
-                numSetsAdded,      tpSet,      sumSetWaiting,      sumSetService,      sumSetResponse,
-                numGetsAdded,      tpGet,      sumGetWaiting,      sumGetService,      sumGetResponse,
-                numMultigetsAdded, tpMultiget, sumMultigetWaiting, sumMultigetService, sumMultigetResponse,
+                numSetsAdded,      tpSet,      sumSetWaiting,      sumSetService,      sumSetResponse,      sumSetProcess,
+                numGetsAdded,      tpGet,      sumGetWaiting,      sumGetService,      sumGetResponse,      sumGetProcess,
+                numMultigetsAdded, tpMultiget, sumMultigetWaiting, sumMultigetService, sumMultigetResponse, sumMultigetProcess,
                 avgQueueLength);
     }
 }

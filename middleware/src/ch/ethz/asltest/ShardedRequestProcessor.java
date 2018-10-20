@@ -5,6 +5,8 @@ import org.apache.logging.log4j.*;
 import java.io.BufferedReader;
 import java.net.*;
 import java.io.IOException;
+import java.util.Comparator;
+import java.util.PriorityQueue;
 
 
 /**
@@ -13,8 +15,27 @@ import java.io.IOException;
  */
 public class ShardedRequestProcessor extends RequestProcessor {
 
+    // load balancing instruments
+    public class Server {
+        int serverId;
+        long keys;
+        Server(int id, long initKeys) {
+            serverId = id;
+            keys = initKeys;
+        }
+    }
+    private PriorityQueue<Server> serversLoadBalanced;
+    private int[] serversSentTo;
+
     ShardedRequestProcessor(Statistics stats, Socket[] servers, Logger threadLogger) {
         super(stats, servers, threadLogger);
+        Comparator<Server> comparator =  Comparator.comparing(o->o.keys);
+        comparator = comparator.thenComparing(o->o.serverId);
+        serversLoadBalanced = new PriorityQueue<Server>(servers.length, comparator);
+        for (int i = 0; i < servers.length; ++i) {
+            serversLoadBalanced.add(new Server(i, 0));
+        }
+        serversSentTo = new int[servers.length];
     }
 
 
@@ -31,17 +52,16 @@ public class ShardedRequestProcessor extends RequestProcessor {
         }
         logger.trace("Dividing into " + numShards + " shards");
 
-        // send shards to servers in a round-robin manners
+        // send shards to servers; large shards go first, so that they are sent to servers with lowest current load (see sendMultiGetShardRequest)
         int shardSize = numKeys / numShards;
         int remaining = numKeys % numShards;
         int pos = 1;
-        int serverIndex = nextServerIndex;  // send and receive from this index on
         for (int i = 0; i < numShards; ++i) {
             if (i < remaining) {
-                sendMultiGetShardRequest(tokens, pos, pos + shardSize + 1);
+                serversSentTo[i] = sendMultiGetShardRequest(tokens, pos,  shardSize + 1);
                 pos += shardSize + 1;
             } else {
-                sendMultiGetShardRequest(tokens, pos, pos + shardSize);
+                serversSentTo[i] = sendMultiGetShardRequest(tokens, pos, shardSize);
                 pos += shardSize;
             }
         }
@@ -51,10 +71,8 @@ public class ShardedRequestProcessor extends RequestProcessor {
         numMisses = numKeys;
         StringBuilder responseBuilder = new StringBuilder();
         for (int i = 0; i < numShards; ++i) {
-            // receive from serverIndex
-            responseBuilder.append(readMultiGetShardResponse(serverIndex));
-            // update receive server index
-            serverIndex = (serverIndex + 1) % numServers;
+            // receive in the same order as sending
+            responseBuilder.append(readMultiGetShardResponse(serversSentTo[i]));
         }
         responseBuilder.append("END\r\n");
         request.setTimeServersResponded();
@@ -74,19 +92,29 @@ public class ShardedRequestProcessor extends RequestProcessor {
 
     /**
      * send a multi-get command with tokens[fromIndex, toIndex) as keys
-     * @param fromIndex low endpoint (inclusive) of tokens
-     * @param toIndex high endpoint (exclusive) of tokens
+     * @param fromIndex starting index (inclusive) of the keys to send from tokens
+     * @param size number of keys to send
+     * @return server index sent to
      */
-    private void sendMultiGetShardRequest(String[] tokens, int fromIndex, int toIndex) {
+    private int sendMultiGetShardRequest(String[] tokens, int fromIndex, int size) throws IOException {
         StringBuilder requestBuilder = new StringBuilder(tokens[0]);
-        for (int i = fromIndex; i < toIndex; ++i) {
+        for (int i = fromIndex; i < fromIndex + size; ++i) {
             requestBuilder.append(" ");
             requestBuilder.append(tokens[i]);
         }
         requestBuilder.append("\r\n");
 
+        // select the server with current lowest load
+        Server server = serversLoadBalanced.poll();
+        if (server == null) {
+            throw new IOException("Null Pointer Exception from serversLoadBalanced PriorityQueue!");
+        }
+        server.keys += size;
+        serversLoadBalanced.add(server);
+
         // send req to server
-        sendToServer(getAndIncrementNextServerIndex(), requestBuilder.toString());
+        sendToServer(server.serverId, requestBuilder.toString());
+        return server.serverId;
     }
 
 

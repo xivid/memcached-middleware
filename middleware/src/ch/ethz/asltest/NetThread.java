@@ -105,7 +105,8 @@ public class NetThread extends Thread {
                 SocketChannel client = (SocketChannel)key.channel();
                 boolean status;
                 try {
-                    status = handleRead(client, (ByteBuffer)key.attachment());
+                    long arrivalTime = System.nanoTime() / 1000;
+                    status = handleRead(client, (ByteBuffer)key.attachment(), arrivalTime);
                 } catch (IOException e) {
                     key.cancel();
                     client.close();
@@ -128,21 +129,21 @@ public class NetThread extends Thread {
     }
 
 
-    private boolean handleRead(SocketChannel channel, ByteBuffer buffer) throws IOException, InterruptedException {
+    private boolean handleRead(SocketChannel channel, ByteBuffer buffer, long arrivalTime) throws IOException, InterruptedException {
         int bytesRead = channel.read(buffer);
         if (bytesRead == -1) {
             // connection closed by client
             return false;
         }
 
-        int numRequests = extractRequests(channel, buffer);
+        int numRequests = extractRequests(channel, buffer, arrivalTime);
         logger.trace("Extracted " + numRequests + " requests");
 
         return true;
     }
 
 
-    private int extractRequests(SocketChannel channel, ByteBuffer buffer) throws IOException, InterruptedException {
+    private int extractRequests(SocketChannel channel, ByteBuffer buffer, long arrivalTime) throws IOException, InterruptedException {
         int numRequests = 0;
 
         while (true) {
@@ -202,7 +203,7 @@ public class NetThread extends Thread {
             String requestMsg = msg.substring(0, expectedTotalSize);
             // We don't check if requestMsg ends with "\r\n".
             // If not, the server will return an error, and we relay the error.
-            Request request = new Request(requestMsg, type, numKeys, tokens, channel);
+            Request request = new Request(requestMsg, type, numKeys, tokens, channel, arrivalTime);
             enqueueRequest(request);
 
             if (msg.length() == expectedTotalSize) {
