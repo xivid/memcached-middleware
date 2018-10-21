@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# test the limit of one server using 3 load generating (memtier) machines
 # usage: ./exp2.1.sh [test time] [repetitions] [nopop]
 
 if [ -z "${VM_NAME}" ]; then
