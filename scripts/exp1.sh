@@ -52,8 +52,8 @@ clients=(1 2 4 8 16 32) # (1 2 4 8 12 16 20 24 32)
 echolog "# ASL section 1 experiments"
 echolog "Run each experiment with ${time} seconds and ${repetitions} repetitions"
 if [[ $3 != "nopop" ]]; then
-    echolog "Populating server: server1"
-    ./prepopulate.sh 30 server1
+    echolog "Populating server: server1 server2 server3"
+    ./prepopulate.sh 30 server1 server2 server3
     echolog
 fi
 
