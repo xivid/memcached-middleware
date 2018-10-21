@@ -6,6 +6,10 @@ class ThreadLog {
     private long numGets;
     private long numMultigets;
 
+    private long[] numGetsPerServer;
+    private long[] numGetShardsPerServer;
+    private long[] numGetKeysPerServer;
+
     private double tpSet;
     private double tpGet;
     private double tpMultiget;
@@ -31,7 +35,8 @@ class ThreadLog {
     ThreadLog(long numSets, double tpSet, long sumSetWaiting, long sumSetService, long sumSetResponse, long sumSetProcess,
               long numGets, double tpGet, long sumGetWaiting, long sumGetService, long sumGetResponse, long sumGetProcess,
               long numMultigets, double tpMultiget, long sumMultigetWaiting, long sumMultigetService, long sumMultigetResponse, long sumMultigetProcess,
-              double avgQueueLength) {
+              double avgQueueLength,
+              long[] numGetsPerServer, long[] numGetShardsPerServer, long[] numGetKeysPerServer) {
         this.numSets = numSets;
         this.tpSet = tpSet;
         this.sumSetWaiting = sumSetWaiting;
@@ -54,6 +59,10 @@ class ThreadLog {
         this.sumMultigetProcess = sumMultigetProcess;
 
         this.avgQueueLength = avgQueueLength;
+
+        this.numGetsPerServer = numGetsPerServer;
+        this.numGetShardsPerServer = numGetShardsPerServer;
+        this.numGetKeysPerServer = numGetKeysPerServer;
     }
 
 
@@ -67,6 +76,18 @@ class ThreadLog {
 
     long getNumMultigets() {
         return numMultigets;
+    }
+
+    long[] getNumGetsPerServer() {
+        return numGetsPerServer;
+    }
+
+    long[] getNumGetShardsPerServer() {
+        return numGetShardsPerServer;
+    }
+
+    long[] getNumGetKeysPerServer() {
+        return numGetKeysPerServer;
     }
 
     double getTpSet() {
@@ -159,16 +180,16 @@ class ThreadLog {
                 (1.0 * (sumSetResponse + sumGetResponse + sumMultigetResponse) / totalOps);
         double avgProcess = totalOps == 0 ? 0.0 :
                 (1.0 * (sumSetProcess + sumGetProcess + sumMultigetProcess) / totalOps);
-        
+
         return String.format("(avg queue length %.2f)\n" +
-                "===============================================================================================================\n" +
+                "======================================================================================================================================\n" +
                 "%-10s%8s%23s%23s%23s%23s%23s\n" +
-                "---------------------------------------------------------------------------------------------------------------\n" +
+                "--------------------------------------------------------------------------------------------------------------------------------------\n" +
                 "%-10s%8d%23.2f%23.2f%23.2f%23.2f%23.2f\n" +
                 "%-10s%8d%23.2f%23.2f%23.2f%23.2f%23.2f\n" +
                 "%-10s%8d%23.2f%23.2f%23.2f%23.2f%23.2f\n" +
                 "%-10s%8d%23.2f%23.2f%23.2f%23.2f%23.2f\n" +
-                "===============================================================================================================\n",
+                "======================================================================================================================================\n",
                 avgQueueLength,
                 "Type", "Ops", "Throughput (ops/sec)", "Avg Waiting Time (us)", "Avg Service Time (us)", "Avg Response Time (us)", "Avg Process Time (us)",
                 "Sets", numSets, tpSet, avgSetWaiting, avgSetService, avgSetResponse, avgSetProcess,
@@ -176,5 +197,25 @@ class ThreadLog {
                 "Multi-gets", numMultigets, tpMultiget, avgMultigetWaiting, avgMultigetService, avgMultigetResponse, avgMultigetProcess,
                 "Totals", totalOps, tpSet + tpGet + tpMultiget, avgWaiting, avgService, avgResponse, avgProcess
         );
+    }
+
+    /**
+     * Per server statistics
+     * @return beautifully printable string
+     */
+    String toServerString() {
+        StringBuilder sb = new StringBuilder(String.format("\n" +
+                "============================================\n" +
+                "%-8s%8s%10s%17s\n" +
+                "--------------------------------------------\n",
+                "Server", "GETs", "Shards", "GET&MGET keys"));
+
+        for (int i = 0; i < numGetKeysPerServer.length; ++i) {
+            sb.append(String.format("%-8d%8d%10d%17d\n",
+                    i, numGetsPerServer[i], numGetShardsPerServer[i], numGetKeysPerServer[i]));
+        }
+
+        sb.append("============================================\n");
+        return sb.toString();
     }
 }

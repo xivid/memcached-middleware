@@ -78,7 +78,7 @@ public class MyMiddleware {
         }
 
         for (int i = 0; i < numThreadsPTP; ++i) {
-            workerStatistics[i] = new Statistics();
+            workerStatistics[i] = new Statistics(mcAddresses.size());
             workerThreads[i] = new WorkerThread(workerStatistics[i], queue, mcAddresses, readSharded, exceptionLogs);
             workerThreads[i].setName("Worker " + i);
             workerThreads[i].start();
@@ -89,7 +89,7 @@ public class MyMiddleware {
         netThread.start();
 
         // collect all worker threads' statistics every <period> seconds
-        StatCollector statCollector = new StatCollector(workerStatistics, periodLogs, queue, period);
+        StatCollector statCollector = new StatCollector(workerStatistics, periodLogs, queue, period, mcAddresses.size());
         statExecutor.scheduleAtFixedRate(statCollector, 0, period, TimeUnit.MILLISECONDS);
     }
 
@@ -101,7 +101,7 @@ public class MyMiddleware {
     private void waitForExit() {
         // register a shutdown hook
         ExitHandler exitHandler = new ExitHandler(netThread, workerThreads, statExecutor,
-                workerStatistics, periodLogs, exceptionLogs);
+                workerStatistics, periodLogs, exceptionLogs, mcAddresses.size());
         exitHandler.setName("ExitHandler");
         Runtime.getRuntime().addShutdownHook(exitHandler);
     }

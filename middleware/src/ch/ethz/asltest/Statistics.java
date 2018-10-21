@@ -1,6 +1,9 @@
 package ch.ethz.asltest;
 
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+
 /**
  * Per-thread statistics data.
  * Every worker thread holds a instance and update the numbers in it.
@@ -8,7 +11,18 @@ package ch.ethz.asltest;
  */
 class Statistics {
 
-    Statistics() {
+    int numServers;
+
+    Statistics(int numServers) {
+        this.numServers = numServers;
+
+        numGetsPerServer = new long[numServers];
+        numGetShardsPerServer = new long[numServers];
+        numGetKeysPerServer = new long[numServers];
+        numGetsPerServerPrev = new long[numServers];
+        numGetShardsPerServerPrev = new long[numServers];
+        numGetKeysPerServerPrev = new long[numServers];
+
         setHistogram = new Histogram();
         getHistogram = new Histogram();
         multigetHistogram = new Histogram();
@@ -39,6 +53,26 @@ class Statistics {
 
     void incNumMultigets() {
         ++numMultigets;
+    }
+
+    // number of get operations, shards and keys sent to each server
+    private long[] numGetsPerServer;  // only includes plain single-key gets and non-sharded multi-key gets
+    private long[] numGetsPerServerPrev;
+    private long[] numGetShardsPerServer;  // shards of sharded multi-key gets (including single-key shard)
+    private long[] numGetShardsPerServerPrev;
+    private long[] numGetKeysPerServer;  // including both single-key and multi-key get, sharded and non-sharded
+    private long[] numGetKeysPerServerPrev;
+
+    void incNumGetsServer(int serverId) {
+        ++numGetsPerServer[serverId];
+    }
+
+    void incNumGetsShardsServer(int serverId) {
+        ++numGetShardsPerServer[serverId];
+    }
+
+    void addGetKeysServer(int serverId, int keys) {
+        numGetKeysPerServer[serverId] += keys;
     }
 
     // sum of all requests' waiting time (us) in queue by type
@@ -166,6 +200,12 @@ class Statistics {
         numGetsPrev = numGets;
         numMultigetsPrev = numMultigets;
 
+        for (int i = 0; i < numServers; ++i) {
+            numGetsPerServerPrev[i] = numGetsPerServer[i];
+            numGetShardsPerServerPrev[i] = numGetShardsPerServer[i];
+            numGetKeysPerServerPrev[i] = numGetKeysPerServer[i];
+        }
+
         sumSetWaitingTimePrev = sumSetWaitingTime;
         sumGetWaitingTimePrev = sumGetWaitingTime;
         sumMultigetWaitingTimePrev = sumMultigetWaitingTime;
@@ -195,6 +235,14 @@ class Statistics {
         long numSetsAdded = numSets - numSetsPrev;
         long numGetsAdded = numGets - numGetsPrev;
         long numMultigetsAdded = numMultigets - numMultigetsPrev;
+        long[] numGetsPerServerAdded = Arrays.copyOf(numGetsPerServer, numServers);
+        long[] numGetShardsPerServerAdded = Arrays.copyOf(numGetShardsPerServer, numServers);
+        long[] numGetKeysPerServerAdded = Arrays.copyOf(numGetKeysPerServer, numServers);
+        for (int i = 0; i < numServers; ++i) {
+            numGetsPerServerAdded[i] -= numGetsPerServerPrev[i];
+            numGetShardsPerServerAdded[i] -= numGetShardsPerServerPrev[i];
+            numGetKeysPerServerAdded[i] -= numGetKeysPerServerPrev[i];
+        }
 
         // calculate per-type throughput values
         double tpSet = (duration > 0) ? (numSetsAdded / duration) : 0;
@@ -230,6 +278,7 @@ class Statistics {
                 numSetsAdded,      tpSet,      sumSetWaiting,      sumSetService,      sumSetResponse,      sumSetProcess,
                 numGetsAdded,      tpGet,      sumGetWaiting,      sumGetService,      sumGetResponse,      sumGetProcess,
                 numMultigetsAdded, tpMultiget, sumMultigetWaiting, sumMultigetService, sumMultigetResponse, sumMultigetProcess,
-                avgQueueLength);
+                avgQueueLength,
+                numGetsPerServerAdded, numGetShardsPerServerAdded, numGetKeysPerServerAdded);
     }
 }

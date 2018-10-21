@@ -25,9 +25,12 @@ public class ExitHandler extends Thread {
     private Statistics[] workerStatistics;
     private LinkedList<PeriodLog> periodLogs;
     private LinkedList<String> exceptionLogs;
+    private int numServers;
 
     ExitHandler(NetThread net, WorkerThread[] workers, ScheduledExecutorService executor,
-                Statistics[] stats, LinkedList<PeriodLog> plogs, LinkedList<String> elogs) {
+                Statistics[] stats, LinkedList<PeriodLog> plogs, LinkedList<String> elogs, int numServers) {
+        super();
+        this.numServers = numServers;
         netThread = net;
         workerThreads = workers;
         statExecutor = executor;
@@ -119,6 +122,10 @@ public class ExitHandler extends Thread {
         long numMultigets = 0;
         long numOps;
 
+        long[] numGetsPerServer = new long[numServers];
+        long[] numGetShardsPerServer = new long[numServers];
+        long[] numGetKeysPerServer = new long[numServers];
+
         long sumSetResponse = 0;
         long sumGetResponse = 0;
         long sumMultigetResponse = 0;
@@ -153,6 +160,12 @@ public class ExitHandler extends Thread {
             numSets += mergedLog.getNumSets();
             numGets += mergedLog.getNumGets();
             numMultigets += mergedLog.getNumMultigets();
+
+            for (int i = 0; i < numServers; ++i) {
+                numGetsPerServer[i] += mergedLog.getNumGetsPerServer()[i];
+                numGetShardsPerServer[i] += mergedLog.getNumGetShardsPerServer()[i];
+                numGetKeysPerServer[i] += mergedLog.getNumGetKeysPerServer()[i];
+            }
 
             sumSetResponse += mergedLog.getSumSetResponse();
             sumGetResponse += mergedLog.getSumGetResponse();
@@ -189,7 +202,20 @@ public class ExitHandler extends Thread {
         multigetMissRatio = numMultigetKeys > 0 ? ((double)numMultigetMisses) / numMultigetKeys * 100 : 0;
         totalMissRatio = (numTotalHits + numTotalMisses > 0) ? ((double)numTotalMisses) / (numTotalHits + numTotalMisses) * 100 : 0;
 
-        return String.format(
+        StringBuilder sb = new StringBuilder(String.format(
+                "PER SERVER STATS\n" +
+                "============================================\n" +
+                "%-8s%8s%10s%17s\n" +
+                "--------------------------------------------\n",
+                "Server", "GETs", "Shards", "GET&MGET keys"));
+        for (int i = 0; i < numServers; ++i) {
+            sb.append(String.format("%-8d%8d%10d%17d\n",
+                    i, numGetsPerServer[i], numGetShardsPerServer[i], numGetKeysPerServer[i]));
+        }
+        sb.append("============================================\n");
+        sb.append("\n");
+        sb.append(String.format(
+            "PER OPERATION STATS\n" +
             "=====================================================================================================================\n" +
             "%-10s%11s%25s%20s%15s%11s%11s%13s\n" +
             "---------------------------------------------------------------------------------------------------------------------\n" +
@@ -203,6 +229,8 @@ public class ExitHandler extends Thread {
             "Gets",       numGets,      avgGetResponse,           maxTpGet,            avgSizeGet,      numGetHits,      numGetMisses,      getMissRatio,
             "Multi-gets", numMultigets, avgMultigetResponse,      maxTpMultiget,       avgSizeMultiget, numMultigetHits, numMultigetMisses, multigetMissRatio,
             "Totals",     numOps,       avgResponse,              maxTp,               avgSizeTotal,    numTotalHits,    numTotalMisses,    totalMissRatio
-        );
+        ));
+
+        return sb.toString();
     }
 }
