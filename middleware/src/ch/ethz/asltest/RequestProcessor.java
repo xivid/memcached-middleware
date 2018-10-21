@@ -139,6 +139,7 @@ abstract class RequestProcessor {
         // send req to server
         sendToServer(serverIndex, request.getMsg());
         request.setTimeSentToServers();
+        statistics.incNumGetsServer(serverIndex);
 
         // wait for response
         numMisses = request.getNumKeys();

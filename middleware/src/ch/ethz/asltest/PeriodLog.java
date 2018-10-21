@@ -122,7 +122,7 @@ class PeriodLog {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("[%d secs] arrival rate %.2f ops/sec\n\n", logSecond, arrivalRate));
-        sb.append("PER SERVER STATS ").append(getMergedLog().toServerString()).append("\n");
+        sb.append("PER SERVER READ STATS ").append(getMergedLog().toServerString()).append("\n");
         sb.append("ALL WORKERS STATS ").append(getMergedLog().toString()).append("\n");
         for (int i = 0; i < threadLogs.length; ++i) {
             sb.append("WORKER ").append(i).append(" STATS ").append(threadLogs[i].toString()).append("\n");

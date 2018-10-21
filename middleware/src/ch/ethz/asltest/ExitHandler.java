@@ -154,23 +154,28 @@ public class ExitHandler extends Thread {
         double multigetMissRatio;
         double totalMissRatio;
 
-        for (PeriodLog log : periodLogs) {
-            ThreadLog mergedLog = log.getMergedLog();
-
-            numSets += mergedLog.getNumSets();
-            numGets += mergedLog.getNumGets();
-            numMultigets += mergedLog.getNumMultigets();
+        for (Statistics stat : workerStatistics) {
+            numSets += stat.getNumSets();
+            numGets += stat.getNumGets();
+            numMultigets += stat.getNumMultigets();
 
             for (int i = 0; i < numServers; ++i) {
-                numGetsPerServer[i] += mergedLog.getNumGetsPerServer()[i];
-                numGetShardsPerServer[i] += mergedLog.getNumGetShardsPerServer()[i];
-                numGetKeysPerServer[i] += mergedLog.getNumGetKeysPerServer()[i];
+                numGetsPerServer[i] += stat.getNumGetsPerServer()[i];
+                numGetShardsPerServer[i] += stat.getNumGetShardsPerServer()[i];
+                numGetKeysPerServer[i] += stat.getNumGetKeysPerServer()[i];
             }
 
-            sumSetResponse += mergedLog.getSumSetResponse();
-            sumGetResponse += mergedLog.getSumGetResponse();
-            sumMultigetResponse += mergedLog.getSumMultigetResponse();
+            sumSetResponse += stat.getSumSetResponseTime();
+            sumGetResponse += stat.getSumGetResponseTime();
+            sumMultigetResponse += stat.getSumMultigetResponseTime();
 
+            numMultigetKeys += stat.getNumKeysMultiget();
+            numGetMisses += stat.getNumMissesGet();
+            numMultigetMisses += stat.getNumMissesMultiget();
+        }
+
+        for (PeriodLog log : periodLogs) {
+            ThreadLog mergedLog = log.getMergedLog();
             maxTpSet = Math.max(mergedLog.getTpSet(), maxTpSet);
             maxTpGet = Math.max(mergedLog.getTpGet(), maxTpGet);
             maxTpMultiget = Math.max(mergedLog.getTpMultiget(), maxTpMultiget);
@@ -183,12 +188,6 @@ public class ExitHandler extends Thread {
         avgGetResponse = numGets == 0 ? 0 : ((double)sumGetResponse) / numGets;
         avgMultigetResponse = numMultigets == 0 ? 0 : ((double)sumMultigetResponse) / numMultigets;
         avgResponse = numOps == 0 ? 0 : ((double)(sumSetResponse + sumGetResponse + sumMultigetResponse)) / numOps;
-
-        for (Statistics stat : workerStatistics) {
-            numMultigetKeys += stat.getNumKeysMultiget();
-            numGetMisses += stat.getNumMissesGet();
-            numMultigetMisses += stat.getNumMissesMultiget();
-        }
 
         avgSizeGet = (numGets > 0) ? 1 : 0;
         avgSizeMultiget = numMultigets > 0 ? ((double)numMultigetKeys) / numMultigets : 0;
@@ -203,16 +202,16 @@ public class ExitHandler extends Thread {
         totalMissRatio = (numTotalHits + numTotalMisses > 0) ? ((double)numTotalMisses) / (numTotalHits + numTotalMisses) * 100 : 0;
 
         StringBuilder sb = new StringBuilder(String.format(
-                "PER SERVER STATS\n" +
-                "============================================\n" +
-                "%-8s%8s%10s%17s\n" +
-                "--------------------------------------------\n",
-                "Server", "GETs", "Shards", "GET&MGET keys"));
+                "PER SERVER READ STATS\n" +
+                "==================================================\n" +
+                "%-8s%14s%10s%17s\n" +
+                "--------------------------------------------------\n",
+                "Server", "NonSharded", "Shards", "GET&MGET keys"));
         for (int i = 0; i < numServers; ++i) {
-            sb.append(String.format("%-8d%8d%10d%17d\n",
+            sb.append(String.format("%-8d%14d%10d%17d\n",
                     i, numGetsPerServer[i], numGetShardsPerServer[i], numGetKeysPerServer[i]));
         }
-        sb.append("============================================\n");
+        sb.append("==================================================\n");
         sb.append("\n");
         sb.append(String.format(
             "PER OPERATION STATS\n" +

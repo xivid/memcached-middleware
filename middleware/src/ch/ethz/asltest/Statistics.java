@@ -11,7 +11,7 @@ import java.util.Arrays;
  */
 class Statistics {
 
-    int numServers;
+    private int numServers;
 
     Statistics(int numServers) {
         this.numServers = numServers;
@@ -43,6 +43,12 @@ class Statistics {
     private long numMultigets = 0;
     private long numMultigetsPrev = 0;
 
+    long getNumSets() { return numSets; }
+
+    long getNumGets() { return numGets; }
+
+    long getNumMultigets() { return numMultigets; }
+
     void incNumSets() {
         ++numSets;
     }
@@ -62,6 +68,18 @@ class Statistics {
     private long[] numGetShardsPerServerPrev;
     private long[] numGetKeysPerServer;  // including both single-key and multi-key get, sharded and non-sharded
     private long[] numGetKeysPerServerPrev;
+
+    long[] getNumGetsPerServer() {
+        return numGetsPerServer;
+    }
+
+    long[] getNumGetShardsPerServer() {
+        return numGetShardsPerServer;
+    }
+
+    long[] getNumGetKeysPerServer() {
+        return numGetKeysPerServer;
+    }
 
     void incNumGetsServer(int serverId) {
         ++numGetsPerServer[serverId];
@@ -122,6 +140,18 @@ class Statistics {
     private long sumGetResponseTimePrev = 0;
     private long sumMultigetResponseTime = 0;
     private long sumMultigetResponseTimePrev = 0;
+
+    double getSumSetResponseTime() {
+        return sumSetResponseTime;
+    }
+
+    double getSumGetResponseTime() {
+        return sumGetResponseTime;
+    }
+
+    double getSumMultigetResponseTime() {
+        return sumMultigetResponseTime;
+    }
 
     void addSetResponseTime(long t) {
         sumSetResponseTime += t;

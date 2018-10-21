@@ -205,17 +205,17 @@ class ThreadLog {
      */
     String toServerString() {
         StringBuilder sb = new StringBuilder(String.format("\n" +
-                "============================================\n" +
-                "%-8s%8s%10s%17s\n" +
-                "--------------------------------------------\n",
-                "Server", "GETs", "Shards", "GET&MGET keys"));
+                "==================================================\n" +
+                "%-8s%14s%10s%17s\n" +
+                "--------------------------------------------------\n",
+                "Server", "NonSharded", "Shards", "GET&MGET keys"));
 
         for (int i = 0; i < numGetKeysPerServer.length; ++i) {
-            sb.append(String.format("%-8d%8d%10d%17d\n",
+            sb.append(String.format("%-8d%14d%10d%17d\n",
                     i, numGetsPerServer[i], numGetShardsPerServer[i], numGetKeysPerServer[i]));
         }
 
-        sb.append("============================================\n");
+        sb.append("==================================================\n");
         return sb.toString();
     }
 }

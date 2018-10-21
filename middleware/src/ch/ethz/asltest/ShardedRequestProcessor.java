@@ -114,6 +114,9 @@ public class ShardedRequestProcessor extends RequestProcessor {
 
         // send req to server
         sendToServer(server.serverId, requestBuilder.toString());
+
+        statistics.incNumGetsShardsServer(server.serverId);
+        statistics.addGetKeysServer(server.serverId, size);
         return server.serverId;
     }
 
