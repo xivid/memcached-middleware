@@ -6,8 +6,9 @@ import org.apache.logging.log4j.*;
 
 
 /**
- * TODO: write this document
+ * The Middleware Class
  *
+ * Creates all threads, starts logging/measuring instruments and shutdown handler.
  */
 public class MyMiddleware {
 

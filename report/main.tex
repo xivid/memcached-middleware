@@ -1,0 +1,84 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{fullpage}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage[shortlabels]{enumitem}
+\usepackage{amsmath}
+\numberwithin{figure}{section}
+\numberwithin{table}{section}
+%\usepackage{caption}
+\usepackage[font=footnotesize]{caption}
+\usepackage{subcaption}
+\usepackage{multirow}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\usepackage{todonotes}                %% notes from the authors
+\usepackage{threeparttable}
+
+\usepackage{titlesec}
+\titlespacing*{\section}
+{0pt}{3ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+\titlespacing*{\subsection}
+{0pt}{2ex plus 1ex minus .2ex}{1ex plus .2ex}
+\titlespacing*{\subsubsection}
+{0pt}{1ex plus 1ex minus .2ex}{1ex plus .2ex}
+
+\addtolength{\textfloatsep}{-5mm}
+
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\fancypagestyle{firstpagefooter} {
+	\lfoot{\tiny{Version: 25.09.2018}}
+	\cfoot{}
+	\rfoot{\thepage}
+	
+}
+
+
+\lfoot{Name: Zhifei Yang Legi: 17-941-998}
+\rfoot{\thepage}
+
+\begin{document}
+
+\title{Advanced Systems Lab Report\\ \normalsize{Autumn Semester 2018}}
+\author{Name: Zhifei Yang\\Legi: 17-941-998}
+\date{
+	\vspace{4cm}
+	\textbf{Grading} \\
+	\vspace{0.5cm}
+	\begin{tabular}{|c|c|}
+		\hline  \textbf{Section} & \textbf{Points} \\
+		\hline  1                &                 \\ 
+		\hline  2                &                 \\ 
+		\hline  3                &                 \\ 
+		\hline  4                &                 \\ 
+		\hline  5                &                 \\ 
+		\hline  6                &                 \\ 
+		\hline  7                &                 \\ 
+		\hline \hline Total      &                 \\
+		\hline 
+	\end{tabular} 
+}
+\maketitle
+\thispagestyle{firstpagefooter}
+
+\newpage
+
+\input{1_system_overview.tex}
+
+\input{2_baseline_without_middleware.tex}
+
+\input{3_baseline_with_middleware.tex}
+
+\input{4_throughput_for_writes.tex}
+
+\input{5_gets_and_multigets.tex}
+
+\input{6_2k_analysis.tex}
+
+\input{7_queuing_model.tex}
+
+\end{document}

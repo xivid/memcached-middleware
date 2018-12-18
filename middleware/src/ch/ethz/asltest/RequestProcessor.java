@@ -10,8 +10,9 @@ import static java.lang.Math.min;
 
 
 /**
- * TODO: write this document
+ * Request Processor
  *
+ * Processes single-key gets and sets, implementation for multiget processing is left for subclasses.
  */
 abstract class RequestProcessor {
 
@@ -58,7 +59,7 @@ abstract class RequestProcessor {
             try {
                 serverReaders[i] = new BufferedReader(new InputStreamReader(serverSockets[i].getInputStream()));
             } catch (IOException e) {
-                logger.trace("Unable to create a new BufferedReader for server: " + serverSockets[i].getRemoteSocketAddress());
+                // logger.trace("Unable to create a new BufferedReader for server: " + serverSockets[i].getRemoteSocketAddress());
                 throw new IOException("Unable to create a new BufferedReader for server: " + serverSockets[i].getRemoteSocketAddress());
             }
         }
@@ -67,7 +68,7 @@ abstract class RequestProcessor {
             try {
                 serverWriters[i] = new PrintWriter(serverSockets[i].getOutputStream(), true);
             } catch (IOException e) {
-                logger.trace("Unable to create a new BufferedReader for server: " + serverSockets[i].getRemoteSocketAddress());
+                // logger.trace("Unable to create a new BufferedReader for server: " + serverSockets[i].getRemoteSocketAddress());
                 throw new IOException("Unable to create a new BufferedReader for server: " + serverSockets[i].getRemoteSocketAddress());
             }
         }
@@ -93,7 +94,7 @@ abstract class RequestProcessor {
         // wait for response
         for (int i = 0; i < serverSockets.length; ++i) {
             // get server attached buffer
-            logger.trace("Receiving from server " + serverSockets[i].getRemoteSocketAddress());
+            // logger.trace("Receiving from server " + serverSockets[i].getRemoteSocketAddress());
             String response = serverReaders[i].readLine();
             if (response == null) {
                 throw new SocketException("Server" + serverSockets[i].getRemoteSocketAddress() + " closed our connection.");
@@ -117,7 +118,7 @@ abstract class RequestProcessor {
         sendToClient(request.getChannel(), finalResponse);
         request.setTimeSentToClient();
 
-        logger.trace("Completed request: " + request + ", response: [" + finalResponse + "]");
+        // logger.trace("Completed request: " + request + ", response: [" + finalResponse + "]");
     }
 
 
@@ -150,7 +151,7 @@ abstract class RequestProcessor {
         sendToClient(request.getChannel(), finalResponse);
         request.setTimeSentToClient();
 
-        logger.trace("Completed request: " + request + ", response: [" + finalResponse + "]");
+        // logger.trace("Completed request: " + request + ", response: [" + finalResponse + "]");
     }
 
 
@@ -167,7 +168,7 @@ abstract class RequestProcessor {
      * @throws IOException unable to read the whole response
      */
     private String readGetResponse(int serverIndex) throws IOException {
-        logger.trace("Receiving response from server " + serverSockets[serverIndex].getRemoteSocketAddress());
+        // logger.trace("Receiving response from server " + serverSockets[serverIndex].getRemoteSocketAddress());
         BufferedReader reader = serverReaders[serverIndex];
         String line;
         StringBuilder responseBuilder = new StringBuilder();
@@ -209,14 +210,14 @@ abstract class RequestProcessor {
 
 
     void sendToServer(int serverIndex, String msg) {
-        logger.trace("Sending request to server " + serverSockets[serverIndex].getRemoteSocketAddress());
+        // logger.trace("Sending request to server " + serverSockets[serverIndex].getRemoteSocketAddress());
         serverWriters[serverIndex].print(msg);
         serverWriters[serverIndex].flush();
     }
 
 
     void sendToClient(SocketChannel client, String msg) throws IOException {
-        logger.trace("Sending to client " + client.getRemoteAddress());
+        // logger.trace("Sending to client " + client.getRemoteAddress());
         byte[] msgBytes = msg.getBytes();
         int msgLength = msgBytes.length;
         int msgRemaining = msgLength;

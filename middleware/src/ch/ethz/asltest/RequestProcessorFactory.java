@@ -5,8 +5,9 @@ import java.net.Socket;
 
 
 /**
- * TODO: write this document
+ * RequestProcessorFactory
  *
+ * Factory for creating request processors.
  */
 class RequestProcessorFactory {
 

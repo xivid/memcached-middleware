@@ -7,8 +7,9 @@ import java.util.concurrent.ScheduledExecutorService;
 
 
 /**
- * TODO: write this document
+ * Exit Handler
  *
+ * Prints all statistics on termination signal.
  */
 public class ExitHandler extends Thread {
 

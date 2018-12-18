@@ -4,8 +4,9 @@ import java.nio.channels.*;
 
 
 /**
- * TODO: write this document
+ * Request
  *
+ * Represents a parsed request, along with its timing statistics.
  */
 public class Request {
 

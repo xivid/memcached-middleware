@@ -32,7 +32,7 @@ echolog
 
 
 if [ -z $1 ]; then
-    time="100"
+    time="80"
 else
     time=$1
 fi
@@ -43,9 +43,9 @@ else
     repetitions=$2
 fi
 
-cmdpart="memtier_benchmark --port=11211 --protocol=memcache_text --expiry-range=9999-10000 --key-maximum=10000 --data-size=4096"
+cmdpart="memtier_benchmark --port=11211 --protocol=memcache_text --expiry-range=99999-100000 --key-maximum=10000 --data-size=4096"
 fnamepart="../logs/2.1"
-clients=(1 2 4 8 16 32) # (1 2 4 8 12 16 20 24 32)
+clients=(1 4 8 12 16 20 24 28 32)
 
 # pre-populate the memcached servers
 echolog "# ASL section 2.1 experiments"
@@ -84,7 +84,7 @@ for c in "${clients[@]}"; do
         eval ${cmd}
         piddstat=$!
         # run memtier
-        cmd="${cmdpart} --ratio=0:1 --server=server1 --test-time=${time} --clients=${c} --threads=2 > ${dir}/memtier_${VM_NAME}0.log 2>&1 &"
+        cmd="${cmdpart} --ratio=0:1 --server=server1 --test-time=${time} --clients=${c} --threads=2 > ${dir}/${VM_NAME}0.log 2>&1 &"
         echolog ${cmd}
         eval ${cmd}
         pidmemtier=$!
@@ -117,7 +117,7 @@ for c in "${clients[@]}"; do
         eval ${cmd}
         piddstat=$!
         # run memtier
-        cmd="${cmdpart} --ratio=1:0 --server=server1 --test-time=${time} --clients=${c} --threads=2 > ${dir}/memtier_${VM_NAME}0.log 2>&1 &"
+        cmd="${cmdpart} --ratio=1:0 --server=server1 --test-time=${time} --clients=${c} --threads=2 > ${dir}/${VM_NAME}0.log 2>&1 &"
         echolog ${cmd}
         eval ${cmd}
         pidmemtier=$!

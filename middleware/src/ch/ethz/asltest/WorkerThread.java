@@ -8,8 +8,9 @@ import java.util.*;
 
 
 /**
- * TODO: write this document
+ * Worker Thread
  *
+ * Takes requests from the queue, processes them by talking with the server and sending responses back to the clients.
  */
 public class WorkerThread extends Thread {
 
@@ -74,12 +75,12 @@ public class WorkerThread extends Thread {
                     processRequest(request);
                 } catch (SocketException e) {
                     // this happens when a socket to a memcached server is broken, in this case we terminate the middleware.
-                    logger.trace("Failed processing request: [" + request.getMsg() + "], " + e);
+                    // logger.trace("Failed processing request: [" + request.getMsg() + "], " + e);
                     exceptionLogs.add(String.format("[%s] %s, failed to process request [%s]",
                             currentThread().getName(), e.toString(), request.getMsg()));
                     System.exit(-1);
                 } catch (IOException e) {
-                    logger.trace("Failed processing request: [" + request.getMsg() + "], " + e);
+                    // logger.trace("Failed processing request: [" + request.getMsg() + "], " + e);
                     exceptionLogs.add(String.format("[%s] %s, failed to process request [%s]",
                             currentThread().getName(), e.toString(), request.getMsg()));
                 }
@@ -87,7 +88,7 @@ public class WorkerThread extends Thread {
         }
 
         // connections will be closed automatically
-        logger.trace("WorkerThread terminated.");
+        // logger.trace("WorkerThread terminated.");
     }
 
 
@@ -105,19 +106,19 @@ public class WorkerThread extends Thread {
                     // add to serverSockets for write
                     serverSockets[numServers++] = newServer;
 
-                    logger.trace("Connected to server " + newServer.getRemoteSocketAddress());
-                    logger.trace("Channel added to serverSockets (numServers: " + numServers + ")");
+                    // logger.trace("Connected to server " + newServer.getRemoteSocketAddress());
+                    // logger.trace("Channel added to serverSockets (numServers: " + numServers + ")");
                 } else {
                     throw new IllegalArgumentException("Illegal mcAddress " + address);
                 }
             }
         } catch (IOException e) {
-            logger.trace("Caught IOException: " + e);
+            // logger.trace("Caught IOException: " + e);
             exceptionLogs.add(String.format("[%s] %s", currentThread().getName(), e.toString()));
             System.exit(-1);
         } catch (RuntimeException e) {
             // may be an IllegalArgumentException or a NumberFormatException
-            logger.trace("Caught RuntimeException: " + e);
+            // logger.trace("Caught RuntimeException: " + e);
             exceptionLogs.add(String.format("[%s] %s", currentThread().getName(), e.toString()));
             System.exit(-1);
         }
@@ -125,7 +126,7 @@ public class WorkerThread extends Thread {
 
 
     private void processRequest(Request request) throws IOException {
-        logger.trace("Processing request: " + request.toString());
+        // logger.trace("Processing request: " + request.toString());
 
         switch (request.getType()) {
             case SET: {
@@ -160,7 +161,7 @@ public class WorkerThread extends Thread {
                 break;
             }
             default: {
-                logger.trace("Unsupported request type: " + request);
+                // logger.trace("Unsupported request type: " + request);
                 exceptionLogs.add(String.format("[%s] Unsupported request type: %s", currentThread().getName(), request));
                 break;
             }

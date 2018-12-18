@@ -11,8 +11,9 @@ import java.util.*;
 
 
 /**
- * TODO: write this document
+ * Network Thread
  *
+ * Accepts connections from clients, receives and parses requests and puts them in the queue.
  */
 public class NetThread extends Thread {
 
@@ -40,15 +41,15 @@ public class NetThread extends Thread {
 
     @Override
     public void run() {
-        logger.trace("NetThread instance starting on " + myIp + ":" + myPort + ".");
+        // logger.trace("NetThread instance starting on " + myIp + ":" + myPort + ".");
 
         try (
             Selector selector = Selector.open();
             ServerSocketChannel serverSocketChannel = ServerSocketChannel.open()
         ) {
             // bind to port
-            serverSocketChannel.socket().bind(new InetSocketAddress(myIp, myPort));
-            logger.trace("NetThread listening on " + myIp + ":" + myPort);
+            serverSocketChannel.socket().bind(new InetSocketAddress(myIp, myPort), 1000);
+            // logger.trace("NetThread listening on " + myIp + ":" + myPort);
 
             // register the serverSocketChannel
             serverSocketChannel.configureBlocking(false);
@@ -60,24 +61,24 @@ public class NetThread extends Thread {
             }
 
         } catch (IOException e) {
-            logger.trace("Caught an IOException: " + e);
+            // logger.trace("Caught an IOException: " + e);
             exceptionLogs.add(String.format("[%s] %s", currentThread().getName(), e.toString()));
             System.exit(-1);
         } catch (InterruptedException e) {
-            logger.trace("Interrupted");
+            // logger.trace("Interrupted");
             exceptionLogs.add(String.format("[%s] %s", currentThread().getName(), e.toString()));
         }
 
         // connections will be closed automatically
-        logger.trace("NetThread terminated.");
+        // logger.trace("NetThread terminated.");
     }
 
 
     private void selectChannels(Selector selector) throws IOException, InterruptedException {
-        logger.trace("selecting from clients READ or new client ACCEPT...");
+        // logger.trace("selecting from clients READ or new client ACCEPT...");
         selector.select();
 
-        logger.trace("processing selected keys");
+        // logger.trace("processing selected keys");
         Set<SelectionKey> selectedKeys = selector.selectedKeys();
         Iterator<SelectionKey> keyIterator = selectedKeys.iterator();
 
@@ -85,7 +86,7 @@ public class NetThread extends Thread {
             SelectionKey key = keyIterator.next();
             if(key.isAcceptable()) {
                 // accept a new client connection and register with selector
-                logger.trace("Got a new incoming connection.");
+                // logger.trace("Got a new incoming connection.");
 
                 ServerSocketChannel server = (ServerSocketChannel)(key.channel());
                 SocketChannel client = server.accept();
@@ -97,10 +98,10 @@ public class NetThread extends Thread {
                 SelectionKey newKey = client.register(selector, SelectionKey.OP_READ);
                 newKey.attach(ByteBuffer.allocate(MAX_REQUEST_SIZE));
 
-                logger.trace("Accepted a connection from " + client.getRemoteAddress());
+                // logger.trace("Accepted a connection from " + client.getRemoteAddress());
             } else if (key.isReadable()) {
                 // a channel is ready for reading
-                logger.trace("Received a message.");
+                // logger.trace("Received a message.");
 
                 SocketChannel client = (SocketChannel)key.channel();
                 boolean status;
@@ -110,17 +111,15 @@ public class NetThread extends Thread {
                 } catch (IOException e) {
                     key.cancel();
                     client.close();
-                    logger.trace("Caught an IOException: [" + e + "] in handleRead(), de-registered this channel.");
+                    // logger.trace("Caught an IOException: [" + e + "] in handleRead(), de-registered this channel.");
                     exceptionLogs.add(String.format("[%s] %s in handleRead(), de-registered this channel.", currentThread().getName(), e.toString()));
                     continue;
                 }
 
                 if (!status) {
-                    logger.trace("Client " + client.getRemoteAddress() + " closed connection.");
+                    // logger.trace("Client " + client.getRemoteAddress() + " closed connection.");
                     key.cancel();
                     client.close();
-                } else {
-                    logger.trace("Received request(s) from " + client.getRemoteAddress());
                 }
             }
 
@@ -137,7 +136,7 @@ public class NetThread extends Thread {
         }
 
         int numRequests = extractRequests(channel, buffer, arrivalTime);
-        logger.trace("Extracted " + numRequests + " requests");
+        // logger.trace("Extracted " + numRequests + " requests");
 
         return true;
     }
@@ -246,6 +245,6 @@ public class NetThread extends Thread {
 
     private void enqueueRequest(Request request) throws InterruptedException {
         requestQueue.enqueue(request);
-        logger.trace("Put in requestQueue: " + request);
+        // logger.trace("Put in requestQueue: " + request);
     }
 }

@@ -1,5 +1,10 @@
 package ch.ethz.asltest;
 
+/**
+ * Period Log
+ *
+ * Per-window statistics of all threads, composed by ThreadLogs.
+ */
 class PeriodLog {
     private long logSecond;
     private ThreadLog[] threadLogs;

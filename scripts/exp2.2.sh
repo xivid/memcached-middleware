@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# test the limit of one load generating (memtier) machine using 2 servers
 # usage: ./exp2.2.sh [test time] [repetitions] [nopop]
 
 if [ -z "${VM_NAME}" ]; then
@@ -31,7 +32,7 @@ echolog
 
 
 if [ -z $1 ]; then
-    time="100"
+    time="80"
 else
     time=$1
 fi
@@ -42,9 +43,9 @@ else
     repetitions=$2
 fi
 
-cmdpart="memtier_benchmark --port=11211 --protocol=memcache_text --expiry-range=9999-10000 --key-maximum=10000 --data-size=4096"
+cmdpart="memtier_benchmark --port=11211 --protocol=memcache_text --expiry-range=99999-100000 --key-maximum=10000 --data-size=4096"
 fnamepart="../logs/2.2"
-clients=(1 2 4 8 16 32) #(1 2 4 8 12 16 20 24 28 32)
+clients=(1 2 3 4 5 6 8 16 32)
 
 # pre-populate the memcached servers
 echolog "# ASL section 2.2 experiments"
@@ -88,8 +89,8 @@ for c in "${clients[@]}"; do
         eval ${cmd}
         piddstat=$!
         # run memtier
-        cmd1="${cmdpart} --ratio=0:1 --test-time=${time} --clients=${c} --threads=1 --server=server1 > ${dir}/client_${VM_NAME}0.log 2>&1 & "
-        cmd2="${cmdpart} --ratio=0:1 --test-time=${time} --clients=${c} --threads=1 --server=server2 > ${dir}/client_${VM_NAME}1.log 2>&1 & "
+        cmd1="${cmdpart} --ratio=0:1 --test-time=${time} --clients=${c} --threads=1 --server=server1 > ${dir}/${VM_NAME}0.log 2>&1 & "
+        cmd2="${cmdpart} --ratio=0:1 --test-time=${time} --clients=${c} --threads=1 --server=server2 > ${dir}/${VM_NAME}1.log 2>&1 & "
         echolog ${cmd1}
         eval ${cmd1}
         pid1=$!
@@ -126,8 +127,8 @@ for c in "${clients[@]}"; do
         eval ${cmd}
         piddstat=$!
         # run memtier
-        cmd1="${cmdpart} --ratio=1:0 --test-time=${time} --clients=${c} --threads=1 --server=server1 > ${dir}/client_${VM_NAME}0.log 2>&1 & "
-        cmd2="${cmdpart} --ratio=1:0 --test-time=${time} --clients=${c} --threads=1 --server=server2 > ${dir}/client_${VM_NAME}1.log 2>&1 & "
+        cmd1="${cmdpart} --ratio=1:0 --test-time=${time} --clients=${c} --threads=1 --server=server1 > ${dir}/${VM_NAME}0.log 2>&1 & "
+        cmd2="${cmdpart} --ratio=1:0 --test-time=${time} --clients=${c} --threads=1 --server=server2 > ${dir}/${VM_NAME}1.log 2>&1 & "
         echolog ${cmd1}
         eval ${cmd1}
         pid1=$!

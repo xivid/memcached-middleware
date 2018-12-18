@@ -1,5 +1,10 @@
 package ch.ethz.asltest;
 
+/**
+ * Thread Log
+ *
+ * Per-window statistics of a worker thread to be outputted, summarized from the thread's Statistics (see class Statistics).
+ */
 class ThreadLog {
 
     private long numSets;

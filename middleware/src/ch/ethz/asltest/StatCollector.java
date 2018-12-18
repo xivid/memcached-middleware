@@ -2,6 +2,11 @@ package ch.ethz.asltest;
 
 import java.util.LinkedList;
 
+/**
+ * Statistics Collector
+ *
+ * The thread that collects ThreadLogs from all worker threads and composes them into a PeriodLog.
+ */
 public class StatCollector implements Runnable {
 
 

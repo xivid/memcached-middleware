@@ -10,8 +10,9 @@ import java.util.PriorityQueue;
 
 
 /**
- * TODO: write this document
+ * Sharded Request Processor
  *
+ * Processes multigets in a sharded manner, and processes single-key gets and sets normally.
  */
 public class ShardedRequestProcessor extends RequestProcessor {
 
@@ -46,11 +47,11 @@ public class ShardedRequestProcessor extends RequestProcessor {
         int numKeys = tokens.length - 1;
         int numShards = numKeys >= serverSockets.length ? serverSockets.length : numKeys;
 
-        logger.trace("Multi-get numKeys: " + numKeys + ", tokens: ");
-        for (String token : tokens) {
-            logger.trace("[" + token + "]");
-        }
-        logger.trace("Dividing into " + numShards + " shards");
+        // logger.trace("Multi-get numKeys: " + numKeys + ", tokens: ");
+        // for (String token : tokens) {
+            // logger.trace("[" + token + "]");
+        // }
+        // logger.trace("Dividing into " + numShards + " shards");
 
         // send shards to servers; large shards go first, so that they are sent to servers with lowest current load (see sendMultiGetShardRequest)
         int shardSize = numKeys / numShards;
@@ -86,7 +87,7 @@ public class ShardedRequestProcessor extends RequestProcessor {
             throw new IOException("Received even more items than keys required!");
         }
         statistics.addNumMissesMultiget(numMisses);
-        logger.trace("Completed request: " + request + ", response: [" + finalResponse + "]");
+        // logger.trace("Completed request: " + request + ", response: [" + finalResponse + "]");
     }
 
 
@@ -137,7 +138,7 @@ public class ShardedRequestProcessor extends RequestProcessor {
      * @throws IOException unable to read the whole response
      */
     private StringBuilder readMultiGetShardResponse(int serverIndex) throws IOException {
-        logger.trace("Receiving multi-get shard response from server " + serverSockets[serverIndex].getRemoteSocketAddress());
+        // logger.trace("Receiving multi-get shard response from server " + serverSockets[serverIndex].getRemoteSocketAddress());
         BufferedReader reader = serverReaders[serverIndex];
         StringBuilder responseBuilder = new StringBuilder();
         String line;

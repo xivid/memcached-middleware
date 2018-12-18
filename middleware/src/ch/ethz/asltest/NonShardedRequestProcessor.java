@@ -7,8 +7,9 @@ import java.net.*;
 
 
 /**
- * TODO: write this document
+ * NonSharded Request Processor
  *
+ * Processes single-key and multi-key gets and sets in the normal (non-sharded) way.
  */
 public class NonShardedRequestProcessor extends RequestProcessor {
 

@@ -1,0 +1,120 @@
+\section{2K Analysis (90 pts)}
+
+In this section, for write-only and read-only workload respectively, we perform statistical analysis about the impact on throughput and response time by three factors with two levels each, namely Middlewares ($M$): 1 and 2, Memcached servers ($S$): 1 and 3, Worker threads per MW ($W$): 8 and 32. We use a $2^{k}r$ factorial experimental design, where $k=3$ and $r=3$, with the following setup:
+
+\begin{center}
+	\scriptsize{
+		\begin{tabular}{|l|c|}
+			\hline Number of servers                & 1 and 3                                     \\ 
+			\hline Number of client machines        & 3                                           \\ 
+			\hline Instances of memtier per machine & 1 (1 middleware) or 2 (2 middlewares) \\ 
+			\hline Threads per memtier instance     & 2 (1 middleware) or 1 (2 middlewares)   \\
+			\hline Virtual clients per thread       &  32                                     \\ 
+			\hline Workload                         & Write-only and Read-only\\
+			\hline Multi-Get behavior               & N/A                                         \\
+			\hline Multi-Get size                   & N/A                                         \\
+			\hline Number of middlewares            & 1 and 2                                     \\
+			\hline Worker threads per middleware    & 8 and 32                                    \\
+			\hline Repetitions                      & 3 $\times$ 80 seconds each                  \\ 
+			\hline 
+		\end{tabular}
+	} 
+\end{center}
+
+The experiment results are gathered in the table below. It is verified that the interactive law holds both for the middleware (with the adaptions done as described in Section 3.1) and on the memtier side.
+
+\begin{table}[!ht]
+\resizebox{\linewidth}{!}{%
+\begin{threeparttable}[b]
+\begin{tabular}{|l|l|l|l|l|l|l|}
+\hline
+\multicolumn{3}{|c|}{\multirow{2}{*}{Original Data}}                              & \multicolumn{2}{c|}{Readonly}                                    & \multicolumn{2}{c|}{Writeonly}                                   \\ \cline{4-7} 
+\multicolumn{3}{|c|}{}                                                            & \multicolumn{1}{c|}{8 workers} & \multicolumn{1}{c|}{32 workers} & \multicolumn{1}{c|}{8 workers} & \multicolumn{1}{c|}{32 workers} \\ \hline
+\multirow{4}{*}{TP} & \multirow{2}{*}{1 MW} & 1 S  & (2930.50, 2900.02, 2916.42)    & (2903.40, 2919.75, 2930.52)     & (6602.47, 6957.25, 6985.67)    & (10223.78, 10246.70, 10026.18)  \\ \cline{3-7} 
+                                      &                               & 3 S & (5666.55, 5661.40, 5655.28)    & (8471.73, 8549.28, 8541.87)     & (4556.73, 4602.15, 4616.67)    & (7920.83, 7875.78, 7847.98)     \\ \cline{2-7} 
+                                      & \multirow{2}{*}{2 MW} & 1 S  & (2898.20, 2921.13, 2921.95)    & (2901.75, 2929.00, 2895.27)     & (8449.55, 8620.18, 8631.85)    & (12301.38, 12406.87, 12439.07)  \\ \cline{3-7} 
+                                      &                               & 3 S & (8677.92, 8736.78, 8500.63)    & (8729.42, 8725.97, 8725.12)     & (6905.23, 7444.00, 7234.07)    & (10527.00, 10638.98, 10587.75)  \\ \hline
+\multirow{4}{*}{RT}   & \multirow{2}{*}{1 MW} & 1 S  & (65.45, 65.40, 65.40)          & (65.33, 65.32, 65.09)           & (28.70, 27.28, 27.32)          & (18.67, 18.63, 18.93)           \\ \cline{3-7} 
+                                      &                               & 3 S & (33.86, 33.89, 33.93)          & (22.65, 22.32, 22.34)           & (41.88, 41.46, 41.33)          & (24.09, 24.10, 24.32)           \\ \cline{2-7} 
+                                      & \multirow{2}{*}{2 MW} & 1 S  & (65.19, 65.26, 65.22)          & (65.29, 65.06, 65.26)           & (22.40, 22.02, 21.99)          & (15.47, 15.34, 15.43)           \\ \cline{3-7} 
+                                      &                               & 3 S & (21.87, 21.85, 22.38)          & (21.79, 21.80, 21.80)           & (27.49, 25.51, 26.24)          & (17.98, 17.94, 18.02)           \\ \hline
+\end{tabular}
+   \begin{tablenotes}
+    \item \footnotesize{TP: Throughput (ops/sec), RT: Response Time (ms), MW: Middleware, S: Server}
+   \end{tablenotes}
+\end{threeparttable} %
+}
+\end{table}
+
+Next we will discuss the effects of the three factors for each workload, based on the 2k analysis results acquired with the following method:
+
+\begin{enumerate}[noitemsep,topsep=0pt]
+\item For each factor $M, S$ or $W$, the corresponding variable $x_{i}$ is -1 for the lower level, 1 for the higher level.
+\item The effects $q_i$ are calculated with the sign table method for each response variable (\textit{throughput} and \textit{response time}) respectively.
+\item Using 3 repetitions enables us to separate out the unexplained variation attributed to the experimental errors (factor $e$) and account for its effect. The sum of the squared errors (SSE) is computed by subtraction: $ SSE = SSY - 2^{3}\cdot3(q_0^2 + q_M^2 + q_S^2 + q_W^2 + q_{MS}^2 + q_{MW}^2 + q_{SW}^2 + q_{MSW}^2), $ where $SSY=\sum_{i,j}y_{ij}^2$.
+\item Then, the portions of variation are calculated with $ SSi/SST = 2^{3}\cdot3q_{i}^2/(SSY-2^{3}\cdot3q_{0}) $.
+90\% confidence intervals are calculated with $ q_i \mp t_{[0.95;2^3\cdot(3-1)]}s_{q_i} $, where $t$ is the $t$-distribution and $s_{q_i} = s_e/\sqrt{2^{3}\cdot3}=\sqrt{SSE/16}/\sqrt{24}$.
+\item All calculations are omitted in the report for brevity\footnote{The complete procedure can be re-run with Google Sheets from \texttt{logs/6/2k.xlsx} under the project repository.}.
+\end{enumerate}
+
+
+\subsection{Write-only Workload}
+
+For computation of effects, the additive model is chosen because 1) the range of values covered by the response variables is not large, as the maximum is no more than three times of the minimum, 2) although the effects of middlewares and workers seems to multiply, as their product is the total number of workers in the whole system, previous bottleneck analysis has shown that the throughput and response time do not always change with total number of workers, as the system is often bottlenecked by the server's bandwidth, CPU, or the middleware's network thread, 3) the effects of all other interactions are additive by intuition. So we can assume that different components affect the response variables additively and try to verify the assumption afterwards.
+
+\begin{table}[!ht]
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{l|rcr|rcr}
+\hline
+       & \multicolumn{3}{c|}{Throughput}                                                              & \multicolumn{3}{c}{Response Time}                                                           \\ \cline{2-7} 
+Factor & \multicolumn{1}{c}{Effect} & Variation            & \multicolumn{1}{c|}{Confidence Interval} & \multicolumn{1}{c}{Effect} & Variation            & \multicolumn{1}{c}{Confidence Interval} \\ \hline
+I      & 8527.005                   & \multicolumn{1}{l}{} & (8477.38, 8576.64)                       & 24.27125                   & \multicolumn{1}{l}{} & (24.12, 24.43)                          \\
+M      & 1155.155                   & \textbf{25.19\%}              & (1105.53, 1204.79)                       & -3.78875                   & \textbf{24.43\%}              & (-3.94, -3.63)                          \\
+S      & -963.9075                  & \textbf{17.54\%}              & (-1013.53, -914.27)                      & 3.25875                    & \textbf{18.08\%}              & (3.11, 3.42)                            \\
+W      & 1726.5225                  & \textbf{56.27\%}              & (1676.9, 1776.16)                        & -5.19625                   & \textbf{45.96\%}              & (-5.34, -5.04)                          \\
+MS     & 171.2525                   & 0.55\%               & (121.63, 220.89)                         & -1.54625                   & 4.07\%               & (-1.69, -1.39)                          \\
+MW     & 74.8275                    & 0.11\%               & (25.2, 124.46)                           & 1.40875                    & 3.38\%               & (1.26, 1.57)                            \\
+SW     & -56.565                    & 0.06\%               & (-106.19, -6.93)                         & -1.25875                   & 2.70\%               & (-1.41, -1.1)                           \\
+MSW    & -49.71                     & 0.05\%               & (-99.34, -0.07)                          & 0.83125                    & 1.18\%               & (0.68, 0.99)                            \\
+e      & \multicolumn{1}{l}{}       & 0.24\%               & \multicolumn{1}{l|}{}                    & \multicolumn{1}{l}{}       & 0.21\%               & \multicolumn{1}{l}{}                    \\ \hline
+\end{tabular} %
+}
+\caption{\label{tab:2k-write}Effects and Variation Explained in Write-only Workload}
+\end{table}
+
+All effects are statistically significant with 90\% confidence as no confidence intervals include 0. Table~\ref{tab:2k-write} shows clearly in boldface that the three largest portions of variation are explained by the number of worker threads per middleware ($W$), number of middlewares ($M$), number of servers ($S$) respectively. The same order applies for both throughput and response time, which is reasonable because with other parameters in the interactive law fixed, throughput and response time are just inversely proportional to each other. The contribution of interactions are less than 1\% for throughput and 11.33\% for response time, indicating that the interactions of factors do not affect much. The unexplained variation attributed to error is only 0.24\% and 0.21\%. The overall result is reasonable and explainable, and the predictions using this regression model have been verified to match the responses with small residuals and no trend of spreading, plus that the quantile-quantile plot shows a satisfactorily normal distribution\footnote{The quantitle-quantitle plots and residual plots for 6.1 and 6.2 are available in \texttt{logs/6/process.ipynb}.}, it is safe to say the additive assumption holds.
+
+For both throughput and response time, the number of worker threads per middleware explains the largest porition of variation (56.27\% and 45.96\%). This means increasing worker number from 8 to 32 gives the greatest performance boost (i.e. throughput increase and response time decrease), which is consistent with findings in Sections 3.1, 3.2 and 4.1, as the number of workers limits the number of requests to be processed in parallel, and the middleware is far from reaching the maximum throughput using only 8 workers, even with two middlewares. 
+
+The second largest portion is explained by the number of middlewares, with about half the portion of worker numbers: 25.19\% for throughput, 24.43\% for response time. Similarly, increasing from one middleware to two can boost the performance, by increasing the total number of worker threads in the system and by mitigating the burden on network queues with doubled network threads. However, the network thread is not the major bottleneck in this experiment, and the workers added are not as many as increasing $W$ from 8 to 32, therefore it is less effective. The third largest portion is explained by servers, with 17.54\% for throughput and 18.08\% for response time. It has a negative effect on throughput and positive effect on response time, because adding more servers for write-only workload means that the middleware will have to replicate each request to three servers instead of only one, thus increasing the service time. This is also consistent with the differences of experiment results in Section 3.2 and 4.1.
+
+In this set of experiments, the system reaches a maximum throughput of 12382.44 ops/sec with 2 middlewares, 1 server and 32 workers per middleware, which matches the prediction of this model.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Read-only Workload}
+
+Again in this subsection, we use additive model for regression, because the range of response values is not large, and a quick looking from the original data tells that the results are mainly determined by the number of servers itself. So we assume the effects of the three factors are additive and try to verify the assumption afterwards.
+
+\begin{table}[!ht]
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{l|rcr|rcr}
+\hline
+       & \multicolumn{3}{c|}{Throughput}                                                                       & \multicolumn{3}{c}{Response Time}                                                                    \\ \cline{2-7} 
+Factor & \multicolumn{1}{c}{Effect} & \multicolumn{1}{c}{Variation} & \multicolumn{1}{c|}{Confidence Interval} & \multicolumn{1}{c}{Effect} & \multicolumn{1}{c}{Variation} & \multicolumn{1}{c}{Confidence Interval} \\ \hline
+I      & 5400.40875                 & \multicolumn{1}{l}{}          & (5383.44, 5417.39)                       & 45.15625                   & \multicolumn{1}{l}{}          & (45.06, 45.26)                          \\
+M      & 396.51625                  & 2.24\%                        & (379.54, 413.5)                          & -1.59375                   & 0.61\%                        & (-1.69, -1.49)                          \\
+S      & 2486.41875                 & \textbf{88.17}\%                       & (2469.45, 2503.4)                        & -20.11625                  & \textbf{96.85}\%                       & (-20.21, -20.01)                        \\
+W      & 368.17875                  & 1.93\%                        & (351.21, 385.16)                         & -1.48375                   & 0.53\%                        & (-1.58, -1.38)                          \\
+MS     & 399.29125                  & 2.27\%                        & (382.32, 416.27)                         & -1.53125                   & 0.56\%                        & (-1.63, -1.42)                          \\
+MW     & -347.35375                 & 1.72\%                        & (-364.33, -330.37)                       & 1.42125                    & 0.48\%                        & (1.32, 1.53)                            \\
+SW     & 368.88875                  & 1.94\%                        & (351.92, 385.87)                         & -1.43625                   & 0.49\%                        & (-1.53, -1.33)                          \\
+MSW    & -345.51875                 & 1.70\%                        & (-362.49, -328.54)                       & 1.38375                    & 0.46\%                        & (1.29, 1.49)                            \\
+e      & \multicolumn{1}{l}{}       & 0.02\%                        & \multicolumn{1}{l|}{}                    & \multicolumn{1}{l}{}       & 0.01\%                        &                                         \\ \hline
+\end{tabular} %
+}
+\caption{\label{tab:2k-read}Effects and Variation Explained in Read-only Workload}
+\end{table}
+
+All effects are statistically significant with 90\% confidence as no confidence intervals include zero. Table~\ref{tab:2k-read} shows that for both throughput and response time is mainly affected by the number of servers, with contributions of 88.17\% and 96.85\% respectively. The portions of variation explained by other factors and interactions are close to each other, and all significantly smaller than the contribution by the number of servers. The residuals are orders of magnitude smaller than predictions with no trend of spreading, and the quantile-quantile plots show satisfactory normal distribution, so the choice of additive model is suitable.
+
+The reason why the number of servers account for almost all variation is that the bottleneck in read-only workload is almost always the server, as we have found out in Sections 2 and 3. As we can see from the original throughput data, except the 1 middleware - 8 workers case, the system always reached the maximum throughput allowed by the corresponding servers' total sending bandwidth. In the 1 middleware - 8 workers case, the system is limited by the number of worker threads, and this bottleneck can be removed by increasing either the number of middlewares or workers, so there is a small portion of variation explained by $M$, $W$ and the involved interactions.
