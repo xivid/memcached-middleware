@@ -1,6 +1,6 @@
 # Advanced Systems Lab
 
-ASL repository for code, experiment data and the report.
+Backup repository for all code, experiment data and report submitted for Advanced Systems Lab, ETH Zurich Fall 2018. Got a final grade of 6.0 out of 6.0 in this course.
 
 ## Compile and run
 
