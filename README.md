@@ -1,6 +1,7 @@
-# Advanced Systems Lab
+# Memcached Middleware
 
-Backup repository for all code, experiment data and report submitted for Advanced Systems Lab, ETH Zurich Fall 2018. Got a final grade of 6.0 out of 6.0 in this course.
+A load balancer for multi-server multi-client key-value store based on `memcached`'s protocol.
+
 
 ## Compile and run
 
@@ -22,5 +23,6 @@ This will include the log4j logging library and its configuration file. The [arg
 - ./report: source files for the report.
 - ./scripts: shell scripts used to run all experiments.
 
----
-Student: Zhifei Yang (Legi: 17-941-998)
+## Acknowledgement
+
+This project is initiated from the Advanced Systems Lab course at ETH Zurich, Fall 2018. Final grade: 6.0/6.0.
